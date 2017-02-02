@@ -95,6 +95,7 @@ FPImage::FPImage(QWidget *parent) :
 FPImage::~FPImage()
 {
     delete ui;
+    delete processor;
 }
 
 //-------------------------------------------------
@@ -135,6 +136,8 @@ void FPImage::Load(void)
     // Padding
     Padding=S-3*W;
 
+    this->processor = new ImageProcessor(pixR, pixG, pixB, W, H, Padding, S);
+
     // Creamos una Mat de OpenCV (Ima) que "encapsula" los pixels de la QImage Image
 //OCV     Ima=Mat(H,W,CV_8UC3,pixR,S);
 
@@ -174,12 +177,11 @@ void FPImage::DoIt(void)
             //Invert B pixel color
             pixB[i]=255-pixB[i];
     }*/
-    ImageProcessor* processor = new ImageProcessor(pixR, pixG, pixB, W, H, Padding, S);
     //processor->UpsideDown();
     //processor->Invert();
     //processor->GrayScale();
     processor->OldFilter();
-    delete processor;
+
 
 
     // Ejemplo de procesamiento CON OpenCV
