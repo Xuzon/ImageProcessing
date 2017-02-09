@@ -42,6 +42,8 @@ private:
 private slots:
     void Load(void);    // Slot para el botón de carga de imagen
     void DoIt(void);    // Slot para el botón de hacer algo con la imagen
+    void ChangeBrightness(int value);
+    void ChangeContrast(int value);
 
 };
 

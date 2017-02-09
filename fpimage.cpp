@@ -11,8 +11,7 @@
 //--------------------------------------------------
 //-- Filtro de eventos para capturar mouse clicks --
 //--------------------------------------------------
-bool FPImage::eventFilter(QObject *Ob, QEvent *Ev)
-{
+bool FPImage::eventFilter(QObject *Ob, QEvent *Ev){
     // Comprobamos que el evento capturado es un  mouseclick
     if(Ev->type()==QEvent::MouseButtonPress) {
         // Comprobamos que el click ocurrió sobre nuestro QLabel
@@ -40,13 +39,15 @@ bool FPImage::eventFilter(QObject *Ob, QEvent *Ev)
 //-------------------------------------------------
 FPImage::FPImage(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::FPImage)
-{
+    ui(new Ui::FPImage){
+
     ui->setupUi(this);
 
     // CONEXIONES de nuestros objetos (botones, etc...) a nuestros slots
     connect(ui->BLoad,SIGNAL(clicked()),this,SLOT(Load()));
     connect(ui->BDoIt,SIGNAL(clicked()),this,SLOT(DoIt()));
+    connect(ui->SliderBrightness, SIGNAL(valueChanged(int)), this, SLOT(ChangeBrightness(int)));
+    connect(ui->SliderContrast, SIGNAL(valueChanged(int)), this, SLOT(ChangeContrast(int)));
 
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
@@ -57,6 +58,7 @@ FPImage::FPImage(QWidget *parent) :
     // INICIALIZACIONES
     W=H=0;      // Empezamos sin imagen cargada
     Path="..";  // Carpeta inicial
+    this->processor = NULL;
 
     // Inicializamos a negro los lienzos (QPixmap) y los asociamos a las "pantallas" gráficas (QLabel)
     //   Le damos tamaño
@@ -101,8 +103,7 @@ FPImage::~FPImage()
 //-------------------------------------------------
 //----------- Carga una imagen de disco -----------
 //-------------------------------------------------
-void FPImage::Load(void)
-{
+void FPImage::Load(void){
     // Permite al usuario escoger un fichero de imagen
     QString file=QFileDialog::getOpenFileName(this,tr("Abrir imagen"),Path,tr("Image Files (*.png *.jpg *.bmp)"));
     // Si no escogió nada, nos vamos
@@ -136,6 +137,9 @@ void FPImage::Load(void)
     // Padding
     Padding=S-3*W;
 
+    if (this->processor != nullptr) {
+        delete this->processor;
+    }
     this->processor = new ImageProcessor(pixR, pixG, pixB, W, H, Padding, S);
 
     // Creamos una Mat de OpenCV (Ima) que "encapsula" los pixels de la QImage Image
@@ -162,8 +166,7 @@ void FPImage::Load(void)
 //-------------------------------------------------
 //------------- Jugamos con la imagen -------------
 //-------------------------------------------------
-void FPImage::DoIt(void)
-{
+void FPImage::DoIt(void){
     // Nos aseguramos de que hay una imagen cargada
     if(!H) return;
 
@@ -180,7 +183,9 @@ void FPImage::DoIt(void)
     //processor->UpsideDown();
     //processor->Invert();
     //processor->GrayScale();
-    processor->OldFilter();
+    //processor->SepiaFilter();
+    processor->SepiaFilter(65,0,0,15);
+    
 
 
 
@@ -200,6 +205,24 @@ void FPImage::DoIt(void)
     // pensaréis que no habéis hecho nada, pero Image e Ima (que son la misma) sí
     // que han cambiado aunqu eno lo veáis
     ShowIt();
+}
+
+void FPImage::ChangeBrightness(int value) {
+    if (processor != nullptr) {
+        int contrast = this->ui->SliderContrast->value();;
+        int brightness = this->ui->SliderBrightness->value();
+        processor->ChangeContrast(contrast, brightness);
+        ShowIt();
+    }
+}
+
+void FPImage::ChangeContrast(int value) {
+    if (processor != nullptr) {
+        int contrast = this->ui->SliderContrast->value();;
+        int brightness = this->ui->SliderBrightness->value();
+        processor->ChangeContrast(contrast, brightness);
+        ShowIt();
+    }
 }
 
 //-------------------------------------------------

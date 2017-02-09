@@ -14,14 +14,28 @@ public:
 
     void GrayScale();
 
-    void OldFilter();
+    void SepiaFilter();
+
+    void SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB,uchar diffRG);
+
+    void RadialBlur(int centerX, int centerY);
+
+    void ChangeBrightness(int value);
+
+    void ChangeContrast(int contrast,int brightness);
+
+    static int ContrastTransform(float alpha, float beta, int value);
+
+    static int Clamp0255(int value);
 
 private:
     uchar *pixR, *pixG, *pixB;
+
+    uchar *copyImage;
+    uchar *pixRCopy, *pixGCopy, *pixBCopy;
+
     int W, H, Padding, S;
 
-    int rOld = 10;
-    int gOld = 5;
-    int bOld;
+
 };
 

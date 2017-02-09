@@ -23,6 +23,7 @@
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
@@ -50,6 +51,10 @@ public:
     QLabel *EcranHistoR;
     QLabel *EcranHistoG;
     QLabel *EcranHistoB;
+    QLabel *LBrightness;
+    QSlider *SliderBrightness;
+    QLabel *LContrast;
+    QSlider *SliderContrast;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -154,6 +159,33 @@ public:
 
         verticalLayout_2->addWidget(EcranHistoB);
 
+        LBrightness = new QLabel(centralWidget);
+        LBrightness->setObjectName(QStringLiteral("LBrightness"));
+
+        verticalLayout_2->addWidget(LBrightness);
+
+        SliderBrightness = new QSlider(centralWidget);
+        SliderBrightness->setObjectName(QStringLiteral("SliderBrightness"));
+        SliderBrightness->setMaximum(100);
+        SliderBrightness->setValue(50);
+        SliderBrightness->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderBrightness);
+
+        LContrast = new QLabel(centralWidget);
+        LContrast->setObjectName(QStringLiteral("LContrast"));
+
+        verticalLayout_2->addWidget(LContrast);
+
+        SliderContrast = new QSlider(centralWidget);
+        SliderContrast->setObjectName(QStringLiteral("SliderContrast"));
+        SliderContrast->setMinimum(0);
+        SliderContrast->setMaximum(100);
+        SliderContrast->setValue(50);
+        SliderContrast->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderContrast);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_2->addItem(verticalSpacer);
@@ -189,6 +221,8 @@ public:
         EcranHistoR->setText(QString());
         EcranHistoG->setText(QString());
         EcranHistoB->setText(QString());
+        LBrightness->setText(QApplication::translate("FPImage", "Brightness", Q_NULLPTR));
+        LContrast->setText(QApplication::translate("FPImage", "Contrast", Q_NULLPTR));
     } // retranslateUi
 
 };
