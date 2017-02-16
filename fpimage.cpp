@@ -48,6 +48,7 @@ FPImage::FPImage(QWidget *parent) :
     connect(ui->BDoIt,SIGNAL(clicked()),this,SLOT(DoIt()));
     connect(ui->SliderBrightness, SIGNAL(valueChanged(int)), this, SLOT(ChangeBrightness(int)));
     connect(ui->SliderContrast, SIGNAL(valueChanged(int)), this, SLOT(ChangeContrast(int)));
+    connect(ui->SliderEdges, SIGNAL(valueChanged(int)), this, SLOT(ChangeEdge(int)));
 
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
@@ -185,7 +186,6 @@ void FPImage::DoIt(void){
     //processor->GrayScale();
     //processor->SepiaFilter();
     processor->SepiaFilter(65,0,0,15);
-    
 
 
 
@@ -209,7 +209,7 @@ void FPImage::DoIt(void){
 
 void FPImage::ChangeBrightness(int value) {
     if (processor != nullptr) {
-        int contrast = this->ui->SliderContrast->value();;
+        int contrast = this->ui->SliderContrast->value();
         int brightness = this->ui->SliderBrightness->value();
         processor->ChangeContrast(contrast, brightness);
         ShowIt();
@@ -218,13 +218,28 @@ void FPImage::ChangeBrightness(int value) {
 
 void FPImage::ChangeContrast(int value) {
     if (processor != nullptr) {
-        int contrast = this->ui->SliderContrast->value();;
+        int contrast = this->ui->SliderContrast->value();
         int brightness = this->ui->SliderBrightness->value();
         processor->ChangeContrast(contrast, brightness);
         ShowIt();
     }
 }
 
+void FPImage::ChangeEdge(int value) {
+    if (processor != nullptr) {
+        if (ui->EuclideanRButton->isChecked()) {
+            edgeMetric = ImageProcessor::EdgeMetric::EuclideanDistance;
+        }
+        if (ui->AbsDifferenceRButton->isChecked()) {
+            edgeMetric = ImageProcessor::EdgeMetric::AbsDifference;
+        }
+        if (ui->MaxDifferenceRButton->isChecked()) {
+            edgeMetric = ImageProcessor::EdgeMetric::MaxDifference;
+        }
+        processor->Edges(ui->SliderEdges->value(),edgeMetric);
+        ShowIt();
+    }
+}
 //-------------------------------------------------
 //-------------- Mostramos la imagen --------------
 //-------------------------------------------------

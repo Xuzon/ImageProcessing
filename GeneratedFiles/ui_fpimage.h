@@ -22,6 +22,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
@@ -55,6 +56,11 @@ public:
     QSlider *SliderBrightness;
     QLabel *LContrast;
     QSlider *SliderContrast;
+    QLabel *LEdges;
+    QSlider *SliderEdges;
+    QRadioButton *EuclideanRButton;
+    QRadioButton *AbsDifferenceRButton;
+    QRadioButton *MaxDifferenceRButton;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -186,6 +192,35 @@ public:
 
         verticalLayout_2->addWidget(SliderContrast);
 
+        LEdges = new QLabel(centralWidget);
+        LEdges->setObjectName(QStringLiteral("LEdges"));
+
+        verticalLayout_2->addWidget(LEdges);
+
+        SliderEdges = new QSlider(centralWidget);
+        SliderEdges->setObjectName(QStringLiteral("SliderEdges"));
+        SliderEdges->setMaximum(300);
+        SliderEdges->setValue(100);
+        SliderEdges->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderEdges);
+
+        EuclideanRButton = new QRadioButton(centralWidget);
+        EuclideanRButton->setObjectName(QStringLiteral("EuclideanRButton"));
+        EuclideanRButton->setChecked(true);
+
+        verticalLayout_2->addWidget(EuclideanRButton);
+
+        AbsDifferenceRButton = new QRadioButton(centralWidget);
+        AbsDifferenceRButton->setObjectName(QStringLiteral("AbsDifferenceRButton"));
+
+        verticalLayout_2->addWidget(AbsDifferenceRButton);
+
+        MaxDifferenceRButton = new QRadioButton(centralWidget);
+        MaxDifferenceRButton->setObjectName(QStringLiteral("MaxDifferenceRButton"));
+
+        verticalLayout_2->addWidget(MaxDifferenceRButton);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_2->addItem(verticalSpacer);
@@ -223,6 +258,10 @@ public:
         EcranHistoB->setText(QString());
         LBrightness->setText(QApplication::translate("FPImage", "Brightness", Q_NULLPTR));
         LContrast->setText(QApplication::translate("FPImage", "Contrast", Q_NULLPTR));
+        LEdges->setText(QApplication::translate("FPImage", "Edges", Q_NULLPTR));
+        EuclideanRButton->setText(QApplication::translate("FPImage", "Euclidean", Q_NULLPTR));
+        AbsDifferenceRButton->setText(QApplication::translate("FPImage", "AbsDifference", Q_NULLPTR));
+        MaxDifferenceRButton->setText(QApplication::translate("FPImage", "MaxDifference", Q_NULLPTR));
     } // retranslateUi
 
 };
