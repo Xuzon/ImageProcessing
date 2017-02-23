@@ -13,7 +13,9 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -58,9 +60,11 @@ public:
     QSlider *SliderContrast;
     QLabel *LEdges;
     QSlider *SliderEdges;
+    QGroupBox *RadioEdgeGroup;
     QRadioButton *EuclideanRButton;
     QRadioButton *AbsDifferenceRButton;
     QRadioButton *MaxDifferenceRButton;
+    QCheckBox *CheckRandomDithering;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -70,7 +74,7 @@ public:
     {
         if (FPImage->objectName().isEmpty())
             FPImage->setObjectName(QStringLiteral("FPImage"));
-        FPImage->resize(932, 623);
+        FPImage->resize(1040, 801);
         centralWidget = new QWidget(FPImage);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -117,7 +121,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 476, 548));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 584, 726));
         gridLayout = new QGridLayout(scrollAreaWidgetContents);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -205,21 +209,26 @@ public:
 
         verticalLayout_2->addWidget(SliderEdges);
 
-        EuclideanRButton = new QRadioButton(centralWidget);
+        RadioEdgeGroup = new QGroupBox(centralWidget);
+        RadioEdgeGroup->setObjectName(QStringLiteral("RadioEdgeGroup"));
+        RadioEdgeGroup->setMinimumSize(QSize(0, 100));
+        EuclideanRButton = new QRadioButton(RadioEdgeGroup);
         EuclideanRButton->setObjectName(QStringLiteral("EuclideanRButton"));
+        EuclideanRButton->setGeometry(QRect(0, 20, 260, 17));
         EuclideanRButton->setChecked(true);
-
-        verticalLayout_2->addWidget(EuclideanRButton);
-
-        AbsDifferenceRButton = new QRadioButton(centralWidget);
+        AbsDifferenceRButton = new QRadioButton(RadioEdgeGroup);
         AbsDifferenceRButton->setObjectName(QStringLiteral("AbsDifferenceRButton"));
-
-        verticalLayout_2->addWidget(AbsDifferenceRButton);
-
-        MaxDifferenceRButton = new QRadioButton(centralWidget);
+        AbsDifferenceRButton->setGeometry(QRect(0, 40, 260, 17));
+        MaxDifferenceRButton = new QRadioButton(RadioEdgeGroup);
         MaxDifferenceRButton->setObjectName(QStringLiteral("MaxDifferenceRButton"));
+        MaxDifferenceRButton->setGeometry(QRect(0, 60, 260, 17));
 
-        verticalLayout_2->addWidget(MaxDifferenceRButton);
+        verticalLayout_2->addWidget(RadioEdgeGroup);
+
+        CheckRandomDithering = new QCheckBox(centralWidget);
+        CheckRandomDithering->setObjectName(QStringLiteral("CheckRandomDithering"));
+
+        verticalLayout_2->addWidget(CheckRandomDithering);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -233,7 +242,7 @@ public:
         FPImage->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(FPImage);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 932, 21));
+        menuBar->setGeometry(QRect(0, 0, 1040, 21));
         FPImage->setMenuBar(menuBar);
         mainToolBar = new QToolBar(FPImage);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -259,9 +268,11 @@ public:
         LBrightness->setText(QApplication::translate("FPImage", "Brightness", Q_NULLPTR));
         LContrast->setText(QApplication::translate("FPImage", "Contrast", Q_NULLPTR));
         LEdges->setText(QApplication::translate("FPImage", "Edges", Q_NULLPTR));
+        RadioEdgeGroup->setTitle(QApplication::translate("FPImage", "Edge Detection Method", Q_NULLPTR));
         EuclideanRButton->setText(QApplication::translate("FPImage", "Euclidean", Q_NULLPTR));
         AbsDifferenceRButton->setText(QApplication::translate("FPImage", "AbsDifference", Q_NULLPTR));
         MaxDifferenceRButton->setText(QApplication::translate("FPImage", "MaxDifference", Q_NULLPTR));
+        CheckRandomDithering->setText(QApplication::translate("FPImage", "Random Dithering", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -47,7 +47,8 @@ private slots:
     void ChangeBrightness(int value);
     void ChangeContrast(int value);
     void ChangeEdge(int value);
-
+    void ChangedEdgeMethod();
+    void RandomDithering(int value);
 
 };
 

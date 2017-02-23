@@ -104,6 +104,86 @@ void ImageProcessor::SepiaFilter() {
     }
 }
 
+void ImageProcessor::Dithering(bool random) {
+
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            int luminance = Clamp0255(Luminance(pixRCopy[i], pixGCopy[i], pixBCopy[i]));
+            pixG[i] = pixB[i] = pixR[i] = luminance;
+        }
+    }
+
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            int luminance = pixR[i];
+            int toSet = 0;
+            if (luminance < 128) {
+                toSet = 0;
+            } else {
+                toSet = 255;
+            }
+
+            int difference = luminance - toSet;
+  
+            float r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
+            AddDitheringNeighborValue(x, y, i, 1, r * difference * 7 / 16);
+
+            r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
+            AddDitheringNeighborValue(x, y, i, W - 1,r * difference * 3 / 16);
+
+            r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
+            AddDitheringNeighborValue(x, y, i, W,r* difference * 5 / 16);
+
+            r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
+            AddDitheringNeighborValue(x, y, i, W + 1,r* difference / 16);
+
+            pixR[i] = toSet;
+            pixG[i] = toSet;
+            pixB[i] = toSet;
+        }
+    }
+}
+
+int ImageProcessor::Luminance(uchar r, uchar g, uchar b) {
+    return r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
+}
+
+int ImageProcessor::Cr(uchar r, uchar g, uchar b) {
+    return -0.147 * r - 0.289 * g + 0.436 * b;
+}
+
+int ImageProcessor::Cb(uchar r, uchar g, uchar b) {
+    return 0.615 * r - 0.515 * g - 0.100 * b;
+}
+
+void ImageProcessor::AddDitheringNeighborValue(int x, int y, int pos, int neighbor,int error) {
+    //keep sure crop image
+    if (x == 0 && neighbor == W - 1) {
+        return;
+    }
+
+    if (x == W - 1 && ((neighbor == W + 1) || (neighbor == 1) )) {
+        return;
+    }
+
+    if (y == H - 1 && neighbor != 1) {
+        return;
+    }
+   
+    int  iR = Clamp0255(pixR[pos + 3 * neighbor] + error);
+    int iG = Clamp0255(pixG[pos + 3 * neighbor] + error);
+    int iB = Clamp0255(pixB[pos + 3 * neighbor] + error);
+
+    /*int  iR = pixR[pos + 3 * neighbor] + error;
+    int iG = pixG[pos + 3 * neighbor] + error;
+    int iB = pixB[pos + 3 * neighbor] + error;*/
+
+
+    pixR[pos + 3 * neighbor] = iR;
+    pixG[pos + 3 * neighbor] = iG;
+    pixB[pos + 3 * neighbor] = iB;
+}
+
 void ImageProcessor::SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB,          uchar diffRG) {
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
         for (int x = 0; x < W; x++, i += 3) {
@@ -131,18 +211,20 @@ void ImageProcessor::Edges(float threshold,EdgeMetric metric) {
     if (metric == EdgeMetric::EuclideanDistance) {
         calculatedThreshold *= calculatedThreshold;
     }
+    Vector3* pixel = new Vector3(0, 0, 0);
+    Vector3 nearbyPixels[9];
+    int buffPos[8];
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
         for (int x = 0; x < W; x++, i += 3) {
             int r = pixRCopy[i];
             int g = pixGCopy[i];
             int b = pixBCopy[i];
-            Vector3* pixel = new Vector3(r, g, b);
+            pixel->SetValues(r, g, b);
             r = g = b = 0;
             int count = 0;
-            Vector3* nearbyPixels = GetNearbyPixels(i, &count,x);
+            GetNearbyPixels(nearbyPixels,i, &count,x,buffPos);
             for (int j = 0; j < count; j++) {
                 float edge = 0;
-
                 switch (metric) {
                 case EdgeMetric::AbsDifference:
                     edge = Vector3::AbsDifference(pixel, &nearbyPixels[j]);
@@ -159,17 +241,19 @@ void ImageProcessor::Edges(float threshold,EdgeMetric metric) {
                     break;
                 }
             }
-            delete[] nearbyPixels;
-            delete pixel;
+
             pixR[i] = r;
             pixG[i] = g;
             pixB[i] = b;
         }
     }
+    delete pixel;
 }
 
-Vector3* ImageProcessor::GetNearbyPixels(int i, int* count,int x) {
-    int* pos = new int[8];
+void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, int x, int* pos) {
+    for (int i = 0; i < 8; i++) {
+        pos[i] = -1;
+    }
     *count = 0;
     //upper positions
     pos[0] = i - S - 3;
@@ -202,20 +286,17 @@ Vector3* ImageProcessor::GetNearbyPixels(int i, int* count,int x) {
         }
     }
     //allocate array
-    Vector3* vecs = new Vector3[*count];
     int k = 0;
     //asign
     for (int j = 0; j < 8; j++) {
         int currPos = pos[j];
         if (currPos > -1) {
-            vecs[k].x = pixRCopy[currPos];
-            vecs[k].y = pixGCopy[currPos];
-            vecs[k].z = pixBCopy[currPos];
+            nearbyPixels[k].x = pixRCopy[currPos];
+            nearbyPixels[k].y = pixGCopy[currPos];
+            nearbyPixels[k].z = pixBCopy[currPos];
             k++;
         }
     }
-    delete[] pos;
-    return vecs;
 }
 
 

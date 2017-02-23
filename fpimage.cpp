@@ -49,6 +49,12 @@ FPImage::FPImage(QWidget *parent) :
     connect(ui->SliderBrightness, SIGNAL(valueChanged(int)), this, SLOT(ChangeBrightness(int)));
     connect(ui->SliderContrast, SIGNAL(valueChanged(int)), this, SLOT(ChangeContrast(int)));
     connect(ui->SliderEdges, SIGNAL(valueChanged(int)), this, SLOT(ChangeEdge(int)));
+    connect(ui->AbsDifferenceRButton, SIGNAL(clicked()), this, SLOT(ChangedEdgeMethod()));
+    connect(ui->MaxDifferenceRButton, SIGNAL(clicked()), this, SLOT(ChangedEdgeMethod()));
+    connect(ui->EuclideanRButton, SIGNAL(clicked()), this, SLOT(ChangedEdgeMethod()));
+
+    connect(ui->CheckRandomDithering, SIGNAL(stateChanged(int)), this, SLOT(RandomDithering(int)));
+
 
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
@@ -185,7 +191,8 @@ void FPImage::DoIt(void){
     //processor->Invert();
     //processor->GrayScale();
     //processor->SepiaFilter();
-    processor->SepiaFilter(65,0,0,15);
+    //processor->SepiaFilter(65,0,0,15);
+    processor->Dithering(ui->CheckRandomDithering->isChecked());
 
 
 
@@ -239,6 +246,14 @@ void FPImage::ChangeEdge(int value) {
         processor->Edges(ui->SliderEdges->value(),edgeMetric);
         ShowIt();
     }
+}
+
+void FPImage::ChangedEdgeMethod() {
+    this->ChangeEdge(0);
+}
+
+void FPImage::RandomDithering(int value) {
+    processor->Dithering(ui->CheckRandomDithering->isChecked());
 }
 //-------------------------------------------------
 //-------------- Mostramos la imagen --------------

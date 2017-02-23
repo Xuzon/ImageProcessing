@@ -22,6 +22,9 @@ public:
 
     void SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB,uchar diffRG);
 
+    void Dithering(bool random);
+
+    void AddDitheringNeighborValue(int x, int y,int pos,int neighbor,int luminance);
 
     void ChangeBrightness(int value);
 
@@ -29,12 +32,17 @@ public:
 
     void Edges(float threshold,EdgeMetric metric);
 
-    Vector3* GetNearbyPixels(int i,int* count,int x);
+    void GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, int x, int* pos);
 
     void ContrastTransform(float alpha, float beta);
 
     static int Clamp0255(int value);
 
+    static int Luminance(uchar r, uchar g, uchar b);
+
+    static int Cr(uchar r, uchar g, uchar b);
+
+    static int Cb(uchar r, uchar g, uchar b);
 
 
 private:

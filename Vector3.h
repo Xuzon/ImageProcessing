@@ -12,6 +12,8 @@ public:
     ~Vector3();
 
     uchar x, y, z;
+
+    void SetValues(uchar x, uchar y, uchar z);
     
     static float Distance(Vector3* from, Vector3* to);
 

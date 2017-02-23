@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>932</width>
-    <height>623</height>
+    <width>1040</width>
+    <height>801</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,8 +62,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>476</width>
-         <height>548</height>
+         <width>584</width>
+         <height>726</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -231,26 +231,64 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="EuclideanRButton">
-        <property name="text">
-         <string>Euclidean</string>
+       <widget class="QGroupBox" name="RadioEdgeGroup">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="title">
+         <string>Edge Detection Method</string>
         </property>
+        <widget class="QRadioButton" name="EuclideanRButton">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>20</y>
+           <width>260</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Euclidean</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="AbsDifferenceRButton">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>40</y>
+           <width>260</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>AbsDifference</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="MaxDifferenceRButton">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>60</y>
+           <width>260</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>MaxDifference</string>
+         </property>
+        </widget>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="AbsDifferenceRButton">
+       <widget class="QCheckBox" name="CheckRandomDithering">
         <property name="text">
-         <string>AbsDifference</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="MaxDifferenceRButton">
-        <property name="text">
-         <string>MaxDifference</string>
+         <string>Random Dithering</string>
         </property>
        </widget>
       </item>
@@ -276,7 +314,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>932</width>
+     <width>1040</width>
      <height>21</height>
     </rect>
    </property>

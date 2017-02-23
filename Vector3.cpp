@@ -21,6 +21,13 @@ Vector3::~Vector3() {
 //maximo diferencias
 
 
+void Vector3::SetValues(uchar x, uchar y, uchar z) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+}
+
+
 float Vector3::Distance(Vector3* from, Vector3* to) {
     float toRet = 0;
 
