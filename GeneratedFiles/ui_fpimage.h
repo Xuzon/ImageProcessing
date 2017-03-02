@@ -65,6 +65,8 @@ public:
     QRadioButton *AbsDifferenceRButton;
     QRadioButton *MaxDifferenceRButton;
     QCheckBox *CheckRandomDithering;
+    QLabel *TransferenceFunction;
+    QPushButton *BHistogram;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -74,7 +76,7 @@ public:
     {
         if (FPImage->objectName().isEmpty())
             FPImage->setObjectName(QStringLiteral("FPImage"));
-        FPImage->resize(1040, 801);
+        FPImage->resize(1092, 990);
         centralWidget = new QWidget(FPImage);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -121,7 +123,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 584, 726));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 636, 915));
         gridLayout = new QGridLayout(scrollAreaWidgetContents);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -230,6 +232,21 @@ public:
 
         verticalLayout_2->addWidget(CheckRandomDithering);
 
+        TransferenceFunction = new QLabel(centralWidget);
+        TransferenceFunction->setObjectName(QStringLiteral("TransferenceFunction"));
+        TransferenceFunction->setMinimumSize(QSize(256, 256));
+        TransferenceFunction->setBaseSize(QSize(256, 256));
+        TransferenceFunction->setFrameShape(QFrame::Panel);
+        TransferenceFunction->setFrameShadow(QFrame::Sunken);
+        TransferenceFunction->setLineWidth(2);
+
+        verticalLayout_2->addWidget(TransferenceFunction);
+
+        BHistogram = new QPushButton(centralWidget);
+        BHistogram->setObjectName(QStringLiteral("BHistogram"));
+
+        verticalLayout_2->addWidget(BHistogram);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_2->addItem(verticalSpacer);
@@ -242,7 +259,7 @@ public:
         FPImage->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(FPImage);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1040, 21));
+        menuBar->setGeometry(QRect(0, 0, 1092, 21));
         FPImage->setMenuBar(menuBar);
         mainToolBar = new QToolBar(FPImage);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -273,6 +290,8 @@ public:
         AbsDifferenceRButton->setText(QApplication::translate("FPImage", "AbsDifference", Q_NULLPTR));
         MaxDifferenceRButton->setText(QApplication::translate("FPImage", "MaxDifference", Q_NULLPTR));
         CheckRandomDithering->setText(QApplication::translate("FPImage", "Random Dithering", Q_NULLPTR));
+        TransferenceFunction->setText(QString());
+        BHistogram->setText(QApplication::translate("FPImage", "Do Histograms", Q_NULLPTR));
     } // retranslateUi
 
 };

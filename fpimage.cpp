@@ -30,8 +30,27 @@ bool FPImage::eventFilter(QObject *Ob, QEvent *Ev){
                                       QString::number(pixB[(y*S+3*x)]));
             // Devolvemos un "true" que significa que hemos gestionado el evento
             return true;
-        } else return false;  // No era para nosotros, lo dejamos en paz
-    } else return false;
+        } else if(Ob == ui->TransferenceFunction){
+            // Hacemos un cast del evento para poder acceder a sus propiedades
+            const QMouseEvent *me = static_cast<const QMouseEvent *>(Ev);
+            // Nos interesan las coordenadas del click
+            int y = me->y(), x = me->x();
+            this->ChangeUserLUT(x, y);
+            this->DrawTransferenceFunction();
+            return true;
+        }else return false;  // No era para nosotros, lo dejamos en paz
+        
+    } else if (Ev->type() == QEvent::MouseMove) {
+        if (Ob == ui->TransferenceFunction) {
+            // Hacemos un cast del evento para poder acceder a sus propiedades
+            const QMouseEvent *me = static_cast<const QMouseEvent *>(Ev);
+            // Nos interesan las coordenadas del click
+            int y = me->y();
+            this->ChangeUserLUT(transferenceXLastClicked, y);
+            this->DrawTransferenceFunction();
+            return true;
+        }
+    }else return false;
 }
 
 //-------------------------------------------------
@@ -55,11 +74,17 @@ FPImage::FPImage(QWidget *parent) :
 
     connect(ui->CheckRandomDithering, SIGNAL(stateChanged(int)), this, SLOT(RandomDithering(int)));
 
+    connect(ui->BHistogram, SIGNAL(clicked()), this, SLOT(DrawHistograms()));
+
 
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
     // para capturar clicks de ratón sobre la imagen
     ui->Ecran->installEventFilter(this);
+    ui->TransferenceFunction->installEventFilter(this);
+    transference = QPixmap(256, 256);
+    transference.fill(Qt::black);
+    ui->TransferenceFunction->setPixmap(transference);
 
 
     // INICIALIZACIONES
@@ -148,7 +173,7 @@ void FPImage::Load(void){
         delete this->processor;
     }
     this->processor = new ImageProcessor(pixR, pixG, pixB, W, H, Padding, S);
-
+    this->DrawTransferenceFunction();
     // Creamos una Mat de OpenCV (Ima) que "encapsula" los pixels de la QImage Image
 //OCV     Ima=Mat(H,W,CV_8UC3,pixR,S);
 
@@ -219,6 +244,7 @@ void FPImage::ChangeBrightness(int value) {
         int contrast = this->ui->SliderContrast->value();
         int brightness = this->ui->SliderBrightness->value();
         processor->ChangeContrast(contrast, brightness);
+        this->DrawTransferenceFunction();
         ShowIt();
     }
 }
@@ -228,6 +254,7 @@ void FPImage::ChangeContrast(int value) {
         int contrast = this->ui->SliderContrast->value();
         int brightness = this->ui->SliderBrightness->value();
         processor->ChangeContrast(contrast, brightness);
+        this->DrawTransferenceFunction();
         ShowIt();
     }
 }
@@ -255,6 +282,65 @@ void FPImage::ChangedEdgeMethod() {
 void FPImage::RandomDithering(int value) {
     processor->Dithering(ui->CheckRandomDithering->isChecked());
 }
+
+void FPImage::DrawTransferenceFunction() {
+    QPainter p(&transference);
+    p.setPen(QPen(Qt::yellow));
+    int lastPos = 0;
+    transference.fill(Qt::black);
+    for (int i = 1; i < 256; i++) {
+        p.drawLine(lastPos, 256 - processor->LUT[lastPos], i, 256 - processor->LUT[i]);
+        lastPos = i;
+    }
+    this->ui->TransferenceFunction->setPixmap(transference);
+}
+
+void FPImage::ChangeUserLUT(int x, int y) {
+    transferenceXLastClicked = x;
+    if (processor != nullptr) {
+        processor->AddToSlope(x, 256 - y);
+        processor->UserContrastTransform();
+        ChangeContrast(0);
+    }
+}
+
+void FPImage::DrawHistograms() {
+    if (processor == nullptr) {
+        return;
+    }
+    processor->Histograms(rHistogram, gHistogram, bHistogram);
+
+    QPainter p(&Dib1);
+    p.setPen(QPen(Qt::yellow));
+    int lastPos = 0;
+    Dib1.fill(Qt::black);
+    for (int i = 1; i < 256; i++) {
+        p.drawLine(i, 99, i, 99 - rHistogram[i]);
+        lastPos = i;
+    }
+    this->ui->EcranHistoR->setPixmap(Dib1);
+
+    QPainter p2(&Dib2);
+    p2.setPen(QPen(Qt::yellow));
+    lastPos = 0;
+    Dib2.fill(Qt::black);
+    for (int i = 1; i < 256; i++) {
+        p2.drawLine(i, 99, i, 99 - gHistogram[i]);
+        lastPos = i;
+    }
+    this->ui->EcranHistoG->setPixmap(Dib2);
+
+    QPainter p3(&Dib3);
+    p3.setPen(QPen(Qt::yellow));
+    lastPos = 0;
+    Dib3.fill(Qt::black);
+    for (int i = 1; i < 256; i++) {
+        p3.drawLine(i, 99, i, 99 - bHistogram[i]);
+        lastPos = i;
+    }
+    this->ui->EcranHistoB->setPixmap(Dib3);
+}
+
 //-------------------------------------------------
 //-------------- Mostramos la imagen --------------
 //-------------------------------------------------
@@ -264,3 +350,4 @@ inline void FPImage::ShowIt(void)
     // y lo asignamos a la QLabel central
     ui->Ecran->setPixmap(QPixmap::fromImage(Image));
 }
+ 

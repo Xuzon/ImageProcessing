@@ -33,6 +33,9 @@ private:
 
     QPixmap Dib1, Dib2, Dib3;   // Tres lienzos en los que dibujar
 
+    //for transference function
+    QPixmap transference;
+    int transferenceXLastClicked;
     void ShowIt(void);          // Muestra la imagen actual
 
     bool eventFilter(QObject *Ob, QEvent *Ev);  // Un "filtro de eventos"
@@ -40,6 +43,14 @@ private:
     ImageProcessor::EdgeMetric edgeMetric = ImageProcessor::EdgeMetric::AbsDifference;
 
     ImageProcessor* processor;
+
+    int rHistogram[256];
+    int gHistogram[256];
+    int bHistogram[256];
+
+    void DrawTransferenceFunction();
+
+    void ChangeUserLUT(int x, int y);
 
 private slots:
     void Load(void);    // Slot para el botón de carga de imagen
@@ -49,6 +60,7 @@ private slots:
     void ChangeEdge(int value);
     void ChangedEdgeMethod();
     void RandomDithering(int value);
+    void DrawHistograms();
 
 };
 

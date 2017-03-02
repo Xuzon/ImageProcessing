@@ -36,6 +36,45 @@ void ImageProcessor::ContrastTransform(float contrast, float brightness) {
         val = contrast * (i - 128) + 128 + brightness;
         LUT[i] = ImageProcessor::Clamp0255(val);
     }
+    UserContrastTransform();
+}
+
+void ImageProcessor::UserContrastTransform() {
+    if (cutPoints.size() == 0) {
+        return;
+    }
+    std::list<int>::iterator it = cutPoints.begin();
+    std::list<float>::iterator slopeIt = slopes.begin();
+    int nextPoint = *it;
+    int lastPoint = 0;
+    float slope = *slopeIt;
+    int val = 0;
+    for (int i = 0; i < 256; i++) {
+        if (i == nextPoint) {
+            if (it != cutPoints.end()) {
+                lastPoint = nextPoint;
+                it++;
+                nextPoint = *it;
+                slopeIt++;
+                slope = *slopeIt;
+            } else {
+                lastPoint = nextPoint;
+                nextPoint = 255;
+                slope = 1;
+            }
+        }
+        val = slope * (i - 128) + 128 + lastPoint;
+        LUT[i] = ImageProcessor::Clamp0255(val);
+    }
+}
+
+void ImageProcessor::AddToSlope(int x, int y) {
+    //TODO
+    std::list<int>::iterator it = cutPoints.end();
+    cutPoints.insert(it,x);
+    float slope = y;
+    std::list<float>::iterator slopeIt = slopes.end();
+    slopes.insert(slopeIt, slope);
 }
 
 int ImageProcessor::Clamp0255(int value) {
@@ -43,6 +82,14 @@ int ImageProcessor::Clamp0255(int value) {
     toRet = toRet > 255 ? 255 : toRet;
     toRet = toRet < 0 ? 0 : toRet;
     return toRet;
+}
+
+float ImageProcessor::Lerp(float x, float y, float t) {
+    return x + t * (y - x);
+}
+
+uchar ImageProcessor::Lerp(uchar x, uchar y, float t) {
+    return x + t * (y - x);
 }
 
 void ImageProcessor::UpsideDown() {
@@ -299,6 +346,54 @@ void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, i
     }
 }
 
+///
+///Returns the histograms normalized to the maximum value of each
+///histogram to 99
+void ImageProcessor::Histograms(int* rHistogram, int* gHistogram, int* bHistogram) {
+
+    memset(rHistogram, 0, 256 * sizeof(int));
+    memset(gHistogram, 0, 256 * sizeof(int));
+    memset(bHistogram, 0, 256 * sizeof(int));
+
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            int r = pixR[i];
+            int g = pixG[i];
+            int b = pixB[i];
+            rHistogram[r]++;
+            gHistogram[g]++;
+            bHistogram[b]++;
+        }
+    }
+
+    int rMaxValue = 0;
+    for (int i = 0; i < 256; i++) {
+        if (rHistogram[i] > rMaxValue) {
+            rMaxValue = rHistogram[i];
+        }
+    }
+
+    int gMaxValue = 0;
+    for (int i = 0; i < 256; i++) {
+        if (gHistogram[i] > gMaxValue) {
+            gMaxValue = gHistogram[i];
+        }
+    }
+
+    int bMaxValue = 0;
+    for (int i = 0; i < 256; i++) {
+        if (bHistogram[i] > bMaxValue) {
+            bMaxValue = bHistogram[i];
+        }
+    }
+
+    for (int i = 0; i < 256; i++) {
+        rHistogram[i] = (rHistogram[i] * 99) / rMaxValue;
+        gHistogram[i] = (gHistogram[i] * 99) / gMaxValue;
+        bHistogram[i] = (bHistogram[i] * 99) / bMaxValue;
+    }
+}
+
 
 ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int H, int Padding, int S) {
 
@@ -312,6 +407,9 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     this->copyImage = new uchar[S * H];
     memcpy(this->copyImage, this->pixR,H * S);
     pixBCopy = (pixGCopy = (pixRCopy = copyImage) + 1) + 1;
+    for (int i = 0; i < 256; i++) {
+        LUT[i] = i;
+    }
 }
 
 ImageProcessor::~ImageProcessor() {

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1040</width>
-    <height>801</height>
+    <width>1092</width>
+    <height>990</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,8 +62,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>584</width>
-         <height>726</height>
+         <width>636</width>
+         <height>915</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -293,6 +293,41 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="TransferenceFunction">
+        <property name="minimumSize">
+         <size>
+          <width>256</width>
+          <height>256</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>256</width>
+          <height>256</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Panel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BHistogram">
+        <property name="text">
+         <string>Do Histograms</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -314,7 +349,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1040</width>
+     <width>1092</width>
      <height>21</height>
     </rect>
    </property>

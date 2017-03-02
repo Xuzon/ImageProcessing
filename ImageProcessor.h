@@ -36,6 +36,14 @@ public:
 
     void ContrastTransform(float alpha, float beta);
 
+    void UserContrastTransform();
+
+    void Histograms(int* rHistogram, int* gHistogram, int* bHistogram);
+
+    static float Lerp(float x, float y, float t);
+
+    static uchar Lerp(uchar x, uchar y, float t);
+
     static int Clamp0255(int value);
 
     static int Luminance(uchar r, uchar g, uchar b);
@@ -44,17 +52,19 @@ public:
 
     static int Cb(uchar r, uchar g, uchar b);
 
+    uchar LUT[256];
+
+    void AddToSlope(int x, int y);
 
 private:
     uchar *pixR, *pixG, *pixB;
-
-    uchar LUT[256];
 
     uchar *copyImage;
     uchar *pixRCopy, *pixGCopy, *pixBCopy;
 
     int W, H, Padding, S;
 
-
+    std::list<int> cutPoints;
+    std::list<float> slopes;
 };
 
