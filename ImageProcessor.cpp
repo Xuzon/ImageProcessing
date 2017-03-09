@@ -39,6 +39,9 @@ void ImageProcessor::ContrastTransform(float contrast, float brightness) {
     UserContrastTransform();
 }
 
+///
+///Will calculate transference function with user clicked points
+///
 void ImageProcessor::UserContrastTransform() {
     if (cutPoints.size() == 0) {
         return;
@@ -47,34 +50,81 @@ void ImageProcessor::UserContrastTransform() {
     std::list<float>::iterator slopeIt = slopes.begin();
     int nextPoint = *it;
     int lastPoint = 0;
-    float slope = *slopeIt;
+    int lastY = 0;
+    int nextY = *slopeIt;
+    float slope = Slope(lastPoint, nextPoint, lastY, nextY);
     int val = 0;
     for (int i = 0; i < 256; i++) {
-        if (i == nextPoint) {
+        if (i == nextPoint && i < 255) {
+            it++;
+            slopeIt++;
             if (it != cutPoints.end()) {
                 lastPoint = nextPoint;
-                it++;
+                lastY = nextY;
                 nextPoint = *it;
-                slopeIt++;
-                slope = *slopeIt;
+                nextY = *slopeIt;
+                slope = Slope(lastPoint,nextPoint,lastY,nextY);
             } else {
                 lastPoint = nextPoint;
-                nextPoint = 255;
+                lastY = nextY;
+                nextPoint = 256;
                 slope = 1;
             }
         }
-        val = slope * (i - 128) + 128 + lastPoint;
+        val = slope * (i - lastPoint )+ lastY;
         LUT[i] = ImageProcessor::Clamp0255(val);
     }
 }
 
+///
+///Will add X and Y to the slopes lists
+///
 void ImageProcessor::AddToSlope(int x, int y) {
-    //TODO
-    std::list<int>::iterator it = cutPoints.end();
-    cutPoints.insert(it,x);
+    std::list<int>::iterator it = cutPoints.begin();
+    bool inserted = false;
+    bool duplicated = false;
+    int selected = 0;
+    if (y > 255 || y < 0) {
+        return;
+    }
+    //search for insert position
+    for (selected = 0; it != cutPoints.end(); it++,selected++) {
+        //if I have an X same than value is duplicated
+        if (*it == x) {
+            duplicated = true;
+            break;
+        }
+        //If the current value of iterator is greater than x
+        //insert before X
+        if (*it > x) {
+            cutPoints.insert(it, x);
+            inserted = true;
+            break;
+        }
+
+    }
+    //If I didn't inserted and isn't duplicated store at the end
+    if (!inserted && !duplicated) {
+        cutPoints.push_back(x);
+    }
+
     float slope = y;
-    std::list<float>::iterator slopeIt = slopes.end();
+    std::list<float>::iterator slopeIt = slopes.begin();
+    //set the iterator at right position
+    for (int i = 0;i < selected; i++) {
+        slopeIt++;
+    }
+    //if it is duplicated remove it
+    if (duplicated) {
+        slopeIt = slopes.erase(slopeIt);
+    }
     slopes.insert(slopeIt, slope);
+}
+
+float ImageProcessor::Slope(int x1, int x2, int y1, int y2) {
+    float num = y2 - y1;
+    float div = x2 - x1;
+    return num / div;
 }
 
 int ImageProcessor::Clamp0255(int value) {
@@ -392,6 +442,81 @@ void ImageProcessor::Histograms(int* rHistogram, int* gHistogram, int* bHistogra
         gHistogram[i] = (gHistogram[i] * 99) / gMaxValue;
         bHistogram[i] = (bHistogram[i] * 99) / bMaxValue;
     }
+}
+
+///
+/// Stret linearly the image (Histogram)
+///
+void ImageProcessor::LinearStretch(int* rHistogram, int* gHistogram, int* bHistogram) {
+
+    StretchHistogram(rHistogram, pixR);
+    StretchHistogram(gHistogram, pixG);
+    StretchHistogram(bHistogram, pixB);
+}
+
+///
+///Get init and end values of histogram and then apply the linear stretch
+///
+void ImageProcessor::StretchHistogram(int* histogram, uchar* componentPointer) {
+    int lowFreq = 0;
+    int highFreq = 0;
+    int maxValuePos = 0;
+    //get ini and end of histogram
+    for (int i = 0; i < 256; i++) {
+        if (histogram[i] != 0) {
+            highFreq = i;
+            if (lowFreq == 0) {
+                lowFreq = i;
+            }
+            if (histogram[i] > maxValuePos) {
+                maxValuePos = i;
+            }
+        }
+    }
+    //apply it to the image
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            componentPointer[i] = LinearStretchInterpolation(lowFreq, highFreq, maxValuePos, histogram,componentPointer[i]);
+        }
+    }
+
+}
+
+///
+///Apply the linear stretch interpolation to a value
+///
+uchar ImageProcessor::LinearStretchInterpolation(int iniPos, int endPos, int maxValuePos, int* histo, int value) {
+    uchar toRet = value;
+    //TODO
+    float num = value - iniPos;
+    float div = endPos - iniPos;
+    float x = num / div;
+    value = x * 255;
+    toRet = Clamp0255(value);
+    return toRet;
+}
+
+///
+///Apply the Vogue stretch interpolation to a value
+///
+uchar ImageProcessor::VogueStretchInterpolation(int iniPos, int endPos, int maxValuePos, int* histo, int value) {
+    uchar toRet = value;
+    //TODO
+    if (value < maxValuePos) {
+        float num = value - iniPos;
+        float div = maxValuePos - iniPos;
+        float x = num / div;
+        value = Clamp0255(x * maxValuePos);
+    } else {
+        if (value > maxValuePos) {
+            float num = value - maxValuePos;
+            float div = endPos - maxValuePos;
+            float x = num / div;
+            value = maxValuePos + x * endPos;
+        }
+    }
+    toRet = Clamp0255(value);
+    return toRet;
 }
 
 

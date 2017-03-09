@@ -38,13 +38,23 @@ public:
 
     void UserContrastTransform();
 
+    ///
+    ///Returns the histograms normalized to the maximum value of each
+    ///histogram to 99
     void Histograms(int* rHistogram, int* gHistogram, int* bHistogram);
+
+    ///
+    /// Stretch linearly the image (Histogram)
+    ///
+    void LinearStretch(int* rHistogram, int* gHistogram, int* bHistogram);
 
     static float Lerp(float x, float y, float t);
 
     static uchar Lerp(uchar x, uchar y, float t);
 
     static int Clamp0255(int value);
+
+    static float Slope(int x1, int x2, int y1, int y2);
 
     static int Luminance(uchar r, uchar g, uchar b);
 
@@ -66,5 +76,20 @@ private:
 
     std::list<int> cutPoints;
     std::list<float> slopes;
+
+    ///
+    ///Get init and end values of histogram and then apply the linear stretch
+    ///
+    void StretchHistogram(int* histogram, uchar* componentPointer);
+
+    ///
+    ///Apply the linear stretch interpolation to a value
+    ///
+    uchar LinearStretchInterpolation(int iniPos, int endPos, int maxValuePos, int* histo, int value);
+
+    ///
+    ///Apply the Vogue stretch interpolation to a value
+    ///
+    uchar VogueStretchInterpolation(int iniPos, int endPos, int maxValuePos, int* histo, int value);
 };
 

@@ -217,7 +217,8 @@ void FPImage::DoIt(void){
     //processor->GrayScale();
     //processor->SepiaFilter();
     //processor->SepiaFilter(65,0,0,15);
-    processor->Dithering(ui->CheckRandomDithering->isChecked());
+    //processor->Dithering(ui->CheckRandomDithering->isChecked());
+    processor->LinearStretch(rHistogram, gHistogram, bHistogram);
 
 
 
@@ -288,8 +289,20 @@ void FPImage::DrawTransferenceFunction() {
     p.setPen(QPen(Qt::yellow));
     int lastPos = 0;
     transference.fill(Qt::black);
+    this->DrawHistograms();
     for (int i = 1; i < 256; i++) {
+
+        p.setPen(QPen(Qt::yellow));
         p.drawLine(lastPos, 256 - processor->LUT[lastPos], i, 256 - processor->LUT[i]);
+
+        p.setPen(QPen(Qt::red));
+        p.drawLine(i, 256, i, 256 - rHistogram[i]);
+
+        p.setPen(QPen(Qt::green));
+        p.drawLine(i, 256, i, 256 - gHistogram[i]);
+
+        p.setPen(QPen(Qt::blue));
+        p.drawLine(i, 256, i, 256 - bHistogram[i]);
         lastPos = i;
     }
     this->ui->TransferenceFunction->setPixmap(transference);
@@ -311,7 +324,7 @@ void FPImage::DrawHistograms() {
     processor->Histograms(rHistogram, gHistogram, bHistogram);
 
     QPainter p(&Dib1);
-    p.setPen(QPen(Qt::yellow));
+    p.setPen(QPen(Qt::red));
     int lastPos = 0;
     Dib1.fill(Qt::black);
     for (int i = 1; i < 256; i++) {
@@ -321,7 +334,7 @@ void FPImage::DrawHistograms() {
     this->ui->EcranHistoR->setPixmap(Dib1);
 
     QPainter p2(&Dib2);
-    p2.setPen(QPen(Qt::yellow));
+    p2.setPen(QPen(Qt::green));
     lastPos = 0;
     Dib2.fill(Qt::black);
     for (int i = 1; i < 256; i++) {
@@ -331,7 +344,7 @@ void FPImage::DrawHistograms() {
     this->ui->EcranHistoG->setPixmap(Dib2);
 
     QPainter p3(&Dib3);
-    p3.setPen(QPen(Qt::yellow));
+    p3.setPen(QPen(Qt::blue));
     lastPos = 0;
     Dib3.fill(Qt::black);
     for (int i = 1; i < 256; i++) {
