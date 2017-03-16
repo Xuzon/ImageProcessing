@@ -65,6 +65,8 @@ public:
     QRadioButton *AbsDifferenceRButton;
     QRadioButton *MaxDifferenceRButton;
     QCheckBox *CheckRandomDithering;
+    QLabel *LAdaptEq;
+    QSlider *SliderAdaptEq;
     QLabel *TransferenceFunction;
     QPushButton *BHistogram;
     QSpacerItem *verticalSpacer;
@@ -232,6 +234,19 @@ public:
 
         verticalLayout_2->addWidget(CheckRandomDithering);
 
+        LAdaptEq = new QLabel(centralWidget);
+        LAdaptEq->setObjectName(QStringLiteral("LAdaptEq"));
+
+        verticalLayout_2->addWidget(LAdaptEq);
+
+        SliderAdaptEq = new QSlider(centralWidget);
+        SliderAdaptEq->setObjectName(QStringLiteral("SliderAdaptEq"));
+        SliderAdaptEq->setMinimum(5);
+        SliderAdaptEq->setMaximum(21);
+        SliderAdaptEq->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderAdaptEq);
+
         TransferenceFunction = new QLabel(centralWidget);
         TransferenceFunction->setObjectName(QStringLiteral("TransferenceFunction"));
         TransferenceFunction->setMinimumSize(QSize(256, 256));
@@ -290,6 +305,7 @@ public:
         AbsDifferenceRButton->setText(QApplication::translate("FPImage", "AbsDifference", Q_NULLPTR));
         MaxDifferenceRButton->setText(QApplication::translate("FPImage", "MaxDifference", Q_NULLPTR));
         CheckRandomDithering->setText(QApplication::translate("FPImage", "Random Dithering", Q_NULLPTR));
+        LAdaptEq->setText(QApplication::translate("FPImage", "Adapatative equalization Neighborhood", Q_NULLPTR));
         TransferenceFunction->setText(QString());
         BHistogram->setText(QApplication::translate("FPImage", "Do Histograms", Q_NULLPTR));
     } // retranslateUi

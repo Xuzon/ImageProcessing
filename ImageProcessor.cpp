@@ -399,11 +399,17 @@ void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, i
 ///
 ///Returns the histograms normalized to the maximum value of each
 ///histogram to 99
-void ImageProcessor::Histograms(int* rHistogram, int* gHistogram, int* bHistogram) {
+int ImageProcessor::Histograms(int* rHistogram, int* gHistogram, int* bHistogram, int* rRawHistogram, int* gRawHistogram, int* bRawHistogram) {
+
+    int toRet = 0;
 
     memset(rHistogram, 0, 256 * sizeof(int));
     memset(gHistogram, 0, 256 * sizeof(int));
     memset(bHistogram, 0, 256 * sizeof(int));
+
+    memset(rRawHistogram, 0, 256 * sizeof(int));
+    memset(gRawHistogram, 0, 256 * sizeof(int));
+    memset(bRawHistogram, 0, 256 * sizeof(int));
 
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
         for (int x = 0; x < W; x++, i += 3) {
@@ -413,6 +419,9 @@ void ImageProcessor::Histograms(int* rHistogram, int* gHistogram, int* bHistogra
             rHistogram[r]++;
             gHistogram[g]++;
             bHistogram[b]++;
+            rRawHistogram[r]++;
+            gRawHistogram[g]++;
+            bRawHistogram[b]++;
         }
     }
 
@@ -437,11 +446,21 @@ void ImageProcessor::Histograms(int* rHistogram, int* gHistogram, int* bHistogra
         }
     }
 
+    toRet = rMaxValue;
+    if (bMaxValue > toRet) {
+        toRet = bMaxValue;
+    }
+
+    if (gMaxValue > toRet) {
+        toRet = gMaxValue;
+    }
+
     for (int i = 0; i < 256; i++) {
         rHistogram[i] = (rHistogram[i] * 99) / rMaxValue;
         gHistogram[i] = (gHistogram[i] * 99) / gMaxValue;
         bHistogram[i] = (bHistogram[i] * 99) / bMaxValue;
     }
+    return toRet;
 }
 
 ///
@@ -517,6 +536,114 @@ uchar ImageProcessor::VogueStretchInterpolation(int iniPos, int endPos, int maxV
     }
     toRet = Clamp0255(value);
     return toRet;
+}
+
+
+///
+///Equalize a histogram
+///
+void ImageProcessor::HistogramEqualization(int* rHistogram, int* gHistogram, int* bHistogram, float div) {
+    //LUT[i] = sum of column and its predecessors divided by num of pixels
+    //of image multiplied by 255
+    float r = 0;
+    float g = 0;
+    float b = 0;
+    for (int i = 0; i < 256; i++) {
+        r += rHistogram[i];
+        g += gHistogram[i];
+        b += bHistogram[i];
+
+        rLUT[i] = Clamp0255((int)(r * 255.0f / div));
+        gLUT[i] = Clamp0255((int)(g * 255.0f / div));
+        bLUT[i] = Clamp0255((int)(b * 255.0f / div));
+    }
+}
+
+///
+///Apply the equalization by histogram
+///
+void ImageProcessor::ApplyHistogramEqualization() {
+    //apply it to the image
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            pixR[i] = rLUT[pixR[i]];
+            pixG[i] = gLUT[pixG[i]];
+            pixB[i] = bLUT[pixB[i]];
+        }
+    }
+}
+
+///
+///Apply the equalization of histogram in neighborhood
+///
+void ImageProcessor::AdapativeHistogramEqualization(int neighborhood) {
+    int rHistogram[256];
+    int gHistogram[256];
+    int bHistogram[256];
+
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            //get nearby histograms
+            NearbyHistograms(i,x,y,neighborhood, rHistogram, gHistogram, bHistogram);
+            //equalize nerby histograms
+            this->HistogramEqualizationValues(rHistogram, neighborhood * neighborhood, pixR[i], rLUT);
+            this->HistogramEqualizationValues(gHistogram, neighborhood * neighborhood, pixG[i], gLUT);
+            this->HistogramEqualizationValues(bHistogram, neighborhood * neighborhood, pixB[i], bLUT);
+            //apply them
+            pixR[i] = rLUT[pixR[i]];
+            pixG[i] = gLUT[pixG[i]];
+            pixB[i] = bLUT[pixB[i]];
+        }
+    }
+}
+
+///
+///Calculate nearby histograms
+///
+void ImageProcessor::NearbyHistograms(int pos, int x, int y,int neighborhood, int* rHistogram, int* gHistogram, int* bHistogram) {
+    memset(rHistogram, 0, 256 * sizeof(int));
+    memset(gHistogram, 0, 256 * sizeof(int));
+    memset(bHistogram, 0, 256 * sizeof(int));
+    int xTemp = 0;
+    int yTemp = 0;
+    int tempPos = 0;
+    int temp = neighborhood / 2;
+    for (int i = 0; i < neighborhood; i++) {
+        int col = i - temp;
+        xTemp = x + col;
+        if (xTemp < 0 || xTemp > W) {
+            continue;
+        }
+        for (int j = 0; j < neighborhood; j++) {
+            int row = j - temp;
+            yTemp = y + row;
+            //check borders
+            if (yTemp > H || yTemp < 0) {
+                continue;
+            }
+            //calculate pos
+            tempPos = yTemp * S + xTemp * 3;
+            //add to the histograms
+            rHistogram[pixR[tempPos]]++;
+            gHistogram[pixG[tempPos]]++;
+            bHistogram[pixB[tempPos]]++;
+        }
+    }
+    //printf("HOLA");
+    //return;
+}
+
+///
+///Equalizate histogram only adquiring the value we want
+///
+void ImageProcessor::HistogramEqualizationValues(int* histogram, float div, int value, uchar* myLUT) {
+    //LUT[i] = sum of column and its predecessors divided by num of pixels
+    //of image multiplied by 255
+    float val = 0;
+    for (int i = 0; i <= value; i++) {
+        val += histogram[i];
+    }
+    myLUT[value] = Clamp0255((int)(val * 255.0f / div));
 }
 
 

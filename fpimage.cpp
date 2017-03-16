@@ -218,8 +218,12 @@ void FPImage::DoIt(void){
     //processor->SepiaFilter();
     //processor->SepiaFilter(65,0,0,15);
     //processor->Dithering(ui->CheckRandomDithering->isChecked());
-    processor->LinearStretch(rHistogram, gHistogram, bHistogram);
-
+    //processor->LinearStretch(rHistogram, gHistogram, bHistogram);
+    //processor->HistogramEqualization(rRawHistogram, gRawHistogram, bRawHistogram, W * H);
+    //processor->ApplyHistogramEqualization();
+    processor->AdapativeHistogramEqualization(this->ui->SliderAdaptEq->value());
+    this->DrawHistograms();
+    this->DrawTransferenceFunction();
 
 
     // Ejemplo de procesamiento CON OpenCV
@@ -296,13 +300,19 @@ void FPImage::DrawTransferenceFunction() {
         p.drawLine(lastPos, 256 - processor->LUT[lastPos], i, 256 - processor->LUT[i]);
 
         p.setPen(QPen(Qt::red));
-        p.drawLine(i, 256, i, 256 - rHistogram[i]);
+        float r = rHistogram[i];
+        r = (rRawHistogram[i] * 99) / maxValue;
+        p.drawLine(i, 256, i, 256 - r);
 
         p.setPen(QPen(Qt::green));
-        p.drawLine(i, 256, i, 256 - gHistogram[i]);
+        float g = gHistogram[i];
+        g = (gRawHistogram[i] * 99) / maxValue;
+        p.drawLine(i, 256, i, 256 - g);
 
         p.setPen(QPen(Qt::blue));
-        p.drawLine(i, 256, i, 256 - bHistogram[i]);
+        float b = bHistogram[i];
+        b = (bRawHistogram[i] * 99) / maxValue;
+        p.drawLine(i, 256, i, 256 - b);
         lastPos = i;
     }
     this->ui->TransferenceFunction->setPixmap(transference);
@@ -321,7 +331,7 @@ void FPImage::DrawHistograms() {
     if (processor == nullptr) {
         return;
     }
-    processor->Histograms(rHistogram, gHistogram, bHistogram);
+    maxValue = processor->Histograms(rHistogram, gHistogram, bHistogram, rRawHistogram, gRawHistogram, bRawHistogram);
 
     QPainter p(&Dib1);
     p.setPen(QPen(Qt::red));

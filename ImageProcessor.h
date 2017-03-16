@@ -41,12 +41,37 @@ public:
     ///
     ///Returns the histograms normalized to the maximum value of each
     ///histogram to 99
-    void Histograms(int* rHistogram, int* gHistogram, int* bHistogram);
+    int Histograms(int* rHistogram, int* gHistogram, int* bHistogram, int* rRawHistogram, int* gRawHistogram, int* bRawHistogram);
 
     ///
     /// Stretch linearly the image (Histogram)
     ///
     void LinearStretch(int* rHistogram, int* gHistogram, int* bHistogram);
+
+    ///
+    ///Equalizate histograms
+    ///
+    void HistogramEqualization(int* rHistogram, int* gHistogram, int* bHistogram, float div);
+
+    ///
+    ///Apply the equalization by histogram
+    ///
+    void ApplyHistogramEqualization();
+
+    ///
+    ///Apply the equalization of histogram in neighborhood
+    ///
+    void AdapativeHistogramEqualization(int neighborhood);
+
+    ///
+    ///Calculate nearby histograms
+    ///
+    void NearbyHistograms(int pos, int x, int y,int neighborhood, int* rHistogram, int* gHistogram, int* bHistogram);
+    ///
+    ///Equalizate histogram only adquiring the value we want
+    ///
+    void HistogramEqualizationValues(int* histogram,float div,int value, uchar* myLUT);
+
 
     static float Lerp(float x, float y, float t);
 
@@ -63,6 +88,10 @@ public:
     static int Cb(uchar r, uchar g, uchar b);
 
     uchar LUT[256];
+
+    uchar rLUT[256];
+    uchar gLUT[256];
+    uchar bLUT[256];
 
     void AddToSlope(int x, int y);
 

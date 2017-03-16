@@ -293,6 +293,26 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="LAdaptEq">
+        <property name="text">
+         <string>Adapatative equalization Neighborhood</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderAdaptEq">
+        <property name="minimum">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <number>21</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="TransferenceFunction">
         <property name="minimumSize">
          <size>

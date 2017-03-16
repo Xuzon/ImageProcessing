@@ -48,6 +48,11 @@ private:
     int gHistogram[256];
     int bHistogram[256];
 
+    int maxValue;
+    int rRawHistogram[256];
+    int gRawHistogram[256];
+    int bRawHistogram[256];
+
     void DrawTransferenceFunction();
 
     void ChangeUserLUT(int x, int y);
