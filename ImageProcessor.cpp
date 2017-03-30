@@ -601,6 +601,7 @@ void ImageProcessor::AdapativeHistogramEqualization(int neighborhood) {
 ///Calculate nearby histograms
 ///
 void ImageProcessor::NearbyHistograms(int pos, int x, int y,int neighborhood, int* rHistogram, int* gHistogram, int* bHistogram) {
+    //TODO optimize
     memset(rHistogram, 0, 256 * sizeof(int));
     memset(gHistogram, 0, 256 * sizeof(int));
     memset(bHistogram, 0, 256 * sizeof(int));
@@ -629,8 +630,6 @@ void ImageProcessor::NearbyHistograms(int pos, int x, int y,int neighborhood, in
             bHistogram[pixB[tempPos]]++;
         }
     }
-    //printf("HOLA");
-    //return;
 }
 
 ///
@@ -644,6 +643,18 @@ void ImageProcessor::HistogramEqualizationValues(int* histogram, float div, int 
         val += histogram[i];
     }
     myLUT[value] = Clamp0255((int)(val * 255.0f / div));
+}
+
+void ImageProcessor::CreateLHS() {
+    if (pixL) {
+        delete[] pixL;
+    }
+    pixL = new uchar[S * H];
+    pixS = (pixH = pixL + 1) + 1;
+    memcpy(this->pixL, this->pixR, H * S);
+    for (int i = 0; i < H * S; i += 3) {
+        ColorSpace::RGBtoLHS(&pixL[i], &pixH[i], &pixS[i]);
+    }
 }
 
 
@@ -662,10 +673,17 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     for (int i = 0; i < 256; i++) {
         LUT[i] = i;
     }
+    //this->faceDetector = new FaceDetector(this);
+    this->pixL = NULL;
+    this->CreateLHS();
+    this->faceDetector = new FaceDetector(this,new Vector3(125,138,7),new Vector3(154,71,17), 5884620
+        , 3607851, 53067,149);
 }
 
 ImageProcessor::~ImageProcessor() {
     if (copyImage != nullptr) {
         delete[] copyImage;
+        delete[] pixL;
     }
+    delete this->faceDetector;
 }

@@ -23,11 +23,39 @@ bool FPImage::eventFilter(QObject *Ob, QEvent *Ev){
             // Si estamos fuera de la imagen, nos vamos
             if(y>=H||x>=W) return true;
             // Hacemos algo con las coordenadas y el píxel
-            statusBar()->showMessage(QString::number(x)+":"+
-                                      QString::number(y)+" "+
-                                      QString::number(pixR[(y*S+3*x)])+":"+
-                                      QString::number(pixG[(y*S+3*x)])+":"+
+            ui->ERes->appendPlainText("R: "+
+                                      QString::number(pixR[(y*S+3*x)])+" G: "+
+                                      QString::number(pixG[(y*S+3*x)])+" B: "+
                                       QString::number(pixB[(y*S+3*x)]));
+                                      
+            if (processor != nullptr) {
+                ui->ERes->appendPlainText("L: " +
+                    QString::number(this->processor->pixL[(y*S + 3 * x)]) + " H:" +
+                    QString::number(this->processor->pixH[(y*S + 3 * x)]) + " S:" +
+                    QString::number(this->processor->pixS[(y*S + 3 * x)]));
+            }
+            if (processor != nullptr) {
+                //add to skin in LHS color spacethis->processor->pixS
+                uchar r = pixR[(y*S + 3 * x)];
+                uchar g = pixG[(y*S + 3 * x)];
+                uchar b = pixB[(y*S + 3 * x)];
+                ColorSpace::RGBtoLHS(&r,&g,&b);
+                processor->faceDetector->AddPixel(this->processor->pixL[(y*S + 3 * x)], this->processor->pixH[(y*S + 3 * x)], this->processor->pixS[(y*S + 3 * x)]);
+                AddPointToHistogram(pixR[(y*S + 3 * x)], pixG[(y*S + 3 * x)], pixB[(y*S + 3 * x)]);
+
+               statusBar()->showMessage(
+                    "Count:" + QString::number(processor->faceDetector->count)
+                    +" SumR:" + QString::number(processor->faceDetector->sumR)
+                    + " SumG:" + QString::number(processor->faceDetector->sumG)
+                    + " SumB:" + QString::number(processor->faceDetector->sumB)
+                    +" MedR:" + QString::number(processor->faceDetector->average.x)
+                    + " MedG:" + QString::number(processor->faceDetector->average.y)
+                    + " MedB:" + QString::number(processor->faceDetector->average.z)
+                    + " DesvR:" + QString::number(processor->faceDetector->typicalDesviation.x)
+                    + " DesvG:" + QString::number(processor->faceDetector->typicalDesviation.y)
+                    + " DesvB:" + QString::number(processor->faceDetector->typicalDesviation.z)
+                );
+            }
             // Devolvemos un "true" que significa que hemos gestionado el evento
             return true;
         } else if(Ob == ui->TransferenceFunction){
@@ -76,6 +104,9 @@ FPImage::FPImage(QWidget *parent) :
 
     connect(ui->BHistogram, SIGNAL(clicked()), this, SLOT(DrawHistograms()));
 
+    connect(ui->SliderRDesv, SIGNAL(valueChanged(int)), this, SLOT(SkinChange(int)));
+    connect(ui->SliderGDesv, SIGNAL(valueChanged(int)), this, SLOT(SkinChange(int)));
+    connect(ui->SliderBDesv, SIGNAL(valueChanged(int)), this, SLOT(SkinChange(int)));
 
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
@@ -221,10 +252,11 @@ void FPImage::DoIt(void){
     //processor->LinearStretch(rHistogram, gHistogram, bHistogram);
     //processor->HistogramEqualization(rRawHistogram, gRawHistogram, bRawHistogram, W * H);
     //processor->ApplyHistogramEqualization();
-    processor->AdapativeHistogramEqualization(this->ui->SliderAdaptEq->value());
-    this->DrawHistograms();
-    this->DrawTransferenceFunction();
-
+    //processor->AdapativeHistogramEqualization(this->ui->SliderAdaptEq->value());
+    //this->DrawHistograms();
+    //this->DrawTransferenceFunction();
+    
+    this->SkinChange(0);
 
     // Ejemplo de procesamiento CON OpenCV
 //OCV     Mat radio5(11,11,CV_8U,Scalar(0));
@@ -244,6 +276,12 @@ void FPImage::DoIt(void){
     ShowIt();
 }
 
+void FPImage::SkinChange(int value) {
+    float rDesv = this->ui->SliderRDesv->value() / 100.0f;
+    float gDesv = this->ui->SliderGDesv->value() / 100.0f;
+    float bDesv = this->ui->SliderBDesv->value() / 100.0f;
+    processor->faceDetector->DetectSkin(rDesv, gDesv, bDesv);
+}
 void FPImage::ChangeBrightness(int value) {
     if (processor != nullptr) {
         int contrast = this->ui->SliderContrast->value();
@@ -331,6 +369,7 @@ void FPImage::DrawHistograms() {
     if (processor == nullptr) {
         return;
     }
+    histogramsFilled = true;
     maxValue = processor->Histograms(rHistogram, gHistogram, bHistogram, rRawHistogram, gRawHistogram, bRawHistogram);
 
     QPainter p(&Dib1);
@@ -361,6 +400,49 @@ void FPImage::DrawHistograms() {
         p3.drawLine(i, 99, i, 99 - bHistogram[i]);
         lastPos = i;
     }
+    this->ui->EcranHistoB->setPixmap(Dib3);
+}
+
+void FPImage::ResetHistograms() {
+    if (!histogramsFilled) {
+        return;
+    }
+    Dib1.fill(Qt::black);
+    this->ui->EcranHistoR->setPixmap(Dib1);
+    Dib2.fill(Qt::black);
+    this->ui->EcranHistoG->setPixmap(Dib2);
+    Dib3.fill(Qt::black);
+    this->ui->EcranHistoB->setPixmap(Dib3);
+    histogramsFilled = false;
+}
+
+void FPImage::AddPointToHistogram(uchar r, uchar g, uchar b) {
+    ResetHistograms();
+    float x = g / 255.0f;
+    float y = r / 255.0f;
+    x *= 100;
+    y *= 100;
+    QPainter p(&Dib1);
+    p.setPen(QPen(Qt::yellow));
+    p.drawLine(x, y, x,y);
+    this->ui->EcranHistoR->setPixmap(Dib1);
+
+    x = b / 255.0f;
+    y = r / 255.0f;
+    x *= 100;
+    y *= 100;
+    QPainter p2(&Dib2);
+    p2.setPen(QPen(Qt::yellow));
+    p2.drawLine(x, y, x, y);
+    this->ui->EcranHistoG->setPixmap(Dib2);
+
+    x = b / 255.0f;
+    y = g / 255.0f;
+    x *= 100;
+    y *= 100;
+    QPainter p3(&Dib3);
+    p3.setPen(QPen(Qt::yellow));
+    p3.drawLine(x, y, x, y);
     this->ui->EcranHistoB->setPixmap(Dib3);
 }
 

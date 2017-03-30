@@ -138,6 +138,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorSpace.cpp" />
+    <ClCompile Include="FaceDetector.cpp" />
     <ClCompile Include="fpimage.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_fpimage.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -193,6 +195,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorSpace.h" />
+    <ClInclude Include="FaceDetector.h" />
     <ClInclude Include="GeneratedFiles\ui_fpimage.h" />
     <ClInclude Include="ImageProcessor.h" />
     <ClInclude Include="Vector3.h" />

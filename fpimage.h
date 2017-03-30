@@ -5,9 +5,11 @@
 //OCV #include <cxcore.h>
 //OCV #include <highgui.h>
 //OCV #include <ml.h>
-
+#pragma once
 #include <QMainWindow>
 #include "ImageProcessor.h"
+#include "FaceDetector.h"
+#include "Vector3.h"
 
 namespace Ui {
 class FPImage;
@@ -53,7 +55,10 @@ private:
     int gRawHistogram[256];
     int bRawHistogram[256];
 
+    bool histogramsFilled = true;
     void DrawTransferenceFunction();
+    void ResetHistograms();
+    void AddPointToHistogram(uchar r, uchar g, uchar b);
 
     void ChangeUserLUT(int x, int y);
 
@@ -66,6 +71,7 @@ private slots:
     void ChangedEdgeMethod();
     void RandomDithering(int value);
     void DrawHistograms();
+    void SkinChange(int value);
 
 };
 

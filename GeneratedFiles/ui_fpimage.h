@@ -69,6 +69,12 @@ public:
     QSlider *SliderAdaptEq;
     QLabel *TransferenceFunction;
     QPushButton *BHistogram;
+    QLabel *LRDesvMulti;
+    QSlider *SliderRDesv;
+    QLabel *LGDesvMulti;
+    QSlider *SliderGDesv;
+    QLabel *LBDesvMulti;
+    QSlider *SliderBDesv;
     QSpacerItem *verticalSpacer;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -78,7 +84,7 @@ public:
     {
         if (FPImage->objectName().isEmpty())
             FPImage->setObjectName(QStringLiteral("FPImage"));
-        FPImage->resize(1092, 990);
+        FPImage->resize(1184, 1195);
         centralWidget = new QWidget(FPImage);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -125,7 +131,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 636, 915));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 728, 1120));
         gridLayout = new QGridLayout(scrollAreaWidgetContents);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -262,6 +268,45 @@ public:
 
         verticalLayout_2->addWidget(BHistogram);
 
+        LRDesvMulti = new QLabel(centralWidget);
+        LRDesvMulti->setObjectName(QStringLiteral("LRDesvMulti"));
+
+        verticalLayout_2->addWidget(LRDesvMulti);
+
+        SliderRDesv = new QSlider(centralWidget);
+        SliderRDesv->setObjectName(QStringLiteral("SliderRDesv"));
+        SliderRDesv->setMaximum(200);
+        SliderRDesv->setSliderPosition(100);
+        SliderRDesv->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderRDesv);
+
+        LGDesvMulti = new QLabel(centralWidget);
+        LGDesvMulti->setObjectName(QStringLiteral("LGDesvMulti"));
+
+        verticalLayout_2->addWidget(LGDesvMulti);
+
+        SliderGDesv = new QSlider(centralWidget);
+        SliderGDesv->setObjectName(QStringLiteral("SliderGDesv"));
+        SliderGDesv->setMaximum(200);
+        SliderGDesv->setSliderPosition(100);
+        SliderGDesv->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderGDesv);
+
+        LBDesvMulti = new QLabel(centralWidget);
+        LBDesvMulti->setObjectName(QStringLiteral("LBDesvMulti"));
+
+        verticalLayout_2->addWidget(LBDesvMulti);
+
+        SliderBDesv = new QSlider(centralWidget);
+        SliderBDesv->setObjectName(QStringLiteral("SliderBDesv"));
+        SliderBDesv->setMaximum(200);
+        SliderBDesv->setSliderPosition(100);
+        SliderBDesv->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderBDesv);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_2->addItem(verticalSpacer);
@@ -274,7 +319,7 @@ public:
         FPImage->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(FPImage);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1092, 21));
+        menuBar->setGeometry(QRect(0, 0, 1184, 21));
         FPImage->setMenuBar(menuBar);
         mainToolBar = new QToolBar(FPImage);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -308,6 +353,9 @@ public:
         LAdaptEq->setText(QApplication::translate("FPImage", "Adapatative equalization Neighborhood", Q_NULLPTR));
         TransferenceFunction->setText(QString());
         BHistogram->setText(QApplication::translate("FPImage", "Do Histograms", Q_NULLPTR));
+        LRDesvMulti->setText(QApplication::translate("FPImage", "R desviation multiplier", Q_NULLPTR));
+        LGDesvMulti->setText(QApplication::translate("FPImage", "G desviation multiplier", Q_NULLPTR));
+        LBDesvMulti->setText(QApplication::translate("FPImage", "B desviation multiplier", Q_NULLPTR));
     } // retranslateUi
 
 };

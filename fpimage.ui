@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1092</width>
-    <height>990</height>
+    <width>1184</width>
+    <height>1195</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,8 +62,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>636</width>
-         <height>915</height>
+         <width>728</width>
+         <height>1120</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -348,6 +348,66 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="LRDesvMulti">
+        <property name="text">
+         <string>R desviation multiplier</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderRDesv">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="sliderPosition">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="LGDesvMulti">
+        <property name="text">
+         <string>G desviation multiplier</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderGDesv">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="sliderPosition">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="LBDesvMulti">
+        <property name="text">
+         <string>B desviation multiplier</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderBDesv">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="sliderPosition">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -369,7 +429,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1092</width>
+     <width>1184</width>
      <height>21</height>
     </rect>
    </property>

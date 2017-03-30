@@ -1,8 +1,13 @@
 #pragma once
 
 #include <QMainWindow>
+#include "ColorSpace.h"
 #include "Vector3.h"
+#include <iostream>
 
+using namespace std;
+
+class FaceDetector;
 class ImageProcessor {
 
 public:
@@ -11,6 +16,8 @@ public:
 
     ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int H, int Padding, int S);
     ~ImageProcessor();
+
+    FaceDetector* faceDetector;
 
     void UpsideDown();
 
@@ -93,15 +100,22 @@ public:
     uchar gLUT[256];
     uchar bLUT[256];
 
-    void AddToSlope(int x, int y);
+    int W, H, Padding, S;
 
-private:
     uchar *pixR, *pixG, *pixB;
 
-    uchar *copyImage;
     uchar *pixRCopy, *pixGCopy, *pixBCopy;
 
-    int W, H, Padding, S;
+    void AddToSlope(int x, int y);
+
+    void CreateLHS();
+    uchar *pixL, *pixH, *pixS;
+
+private:
+    uchar *copyImage;
+
+
+
 
     std::list<int> cutPoints;
     std::list<float> slopes;
@@ -120,5 +134,30 @@ private:
     ///Apply the Vogue stretch interpolation to a value
     ///
     uchar VogueStretchInterpolation(int iniPos, int endPos, int maxValuePos, int* histo, int value);
+};
+
+
+
+class FaceDetector {
+public:
+
+    void AddPixel(uchar r, uchar g, uchar b);
+    void DetectSkin();
+    void DetectSkin(float rDesvMultilier, float gDesvMultiplier, float bDesvMultiplier);
+    FaceDetector(ImageProcessor* processor);
+    FaceDetector(ImageProcessor* processor, Vector3* average, Vector3* typicalDesviation, int sumR, int sumG, int sumB, int count);
+    FaceDetector();
+    ~FaceDetector();
+    Vector3 average;
+    Vector3 typicalDesviation;
+    int sumR = 0;
+    int sumG = 0;
+    int sumB = 0;
+    int count = 0;
+
+private:
+    ImageProcessor* processor;
+    void CalculateAverage(int r, int g, int b);
+    void CalculateTypicalDesviation(int r, int g, int b);
 };
 
