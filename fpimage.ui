@@ -141,6 +141,20 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="BDilate">
+        <property name="text">
+         <string>Dilate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BErode">
+        <property name="text">
+         <string>Erode</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="minimumSize">
          <size>

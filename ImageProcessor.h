@@ -59,6 +59,8 @@ public:
     void ContrastTransform(float alpha, float beta);
 
     void UserContrastTransform();
+
+    void AddToSlope(int x, int y);
     #pragma endregion
 
     #pragma region Histograms
@@ -135,11 +137,13 @@ public:
 
     int W, H, Padding, S;
 
+    uchar *faceMask;
+
     uchar *pixR, *pixG, *pixB;
 
     uchar *pixRCopy, *pixGCopy, *pixBCopy;
 
-    void AddToSlope(int x, int y);
+
 
     void CreateLHS();
     uchar *pixL, *pixH, *pixS;
@@ -177,6 +181,10 @@ public:
     void AddPixel(uchar r, uchar g, uchar b);
     void DetectSkin();
     void DetectSkin(float rDesvMultilier, float gDesvMultiplier, float bDesvMultiplier);
+
+    void Erode();
+    void Dilate();
+    void GetNearbyPixels(uchar* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize);
     FaceDetector(ImageProcessor* processor);
     FaceDetector(ImageProcessor* processor, Vector3* average, Vector3* typicalDesviation, int sumR, int sumG, int sumB, int count);
     FaceDetector();

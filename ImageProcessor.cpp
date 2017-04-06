@@ -918,6 +918,7 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     this->Padding = Padding;
     this->S = S;
     this->copyImage = new uchar[S * H];
+    this->faceMask = new uchar[S * H / 3];
     memcpy(this->copyImage, this->pixR,H * S);
     pixBCopy = (pixGCopy = (pixRCopy = copyImage) + 1) + 1;
     for (int i = 0; i < 256; i++) {
@@ -937,6 +938,7 @@ ImageProcessor::~ImageProcessor() {
     if (copyImage != nullptr) {
         delete[] copyImage;
         delete[] pixL;
+        delete[] faceMask;
     }
     delete this->faceDetector;
 }

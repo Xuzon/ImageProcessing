@@ -58,6 +58,8 @@ public:
     QSlider *SliderGDesv;
     QLabel *LBDesvMulti;
     QSlider *SliderBDesv;
+    QPushButton *BDilate;
+    QPushButton *BErode;
     QTabWidget *tabWidget;
     QWidget *tab_3;
     QLabel *EcranHistoR;
@@ -193,6 +195,16 @@ public:
         SliderBDesv->setOrientation(Qt::Horizontal);
 
         verticalLayout_2->addWidget(SliderBDesv);
+
+        BDilate = new QPushButton(centralWidget);
+        BDilate->setObjectName(QStringLiteral("BDilate"));
+
+        verticalLayout_2->addWidget(BDilate);
+
+        BErode = new QPushButton(centralWidget);
+        BErode->setObjectName(QStringLiteral("BErode"));
+
+        verticalLayout_2->addWidget(BErode);
 
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
@@ -349,6 +361,8 @@ public:
         LRDesvMulti->setText(QApplication::translate("FPImage", "L desviation multiplier", Q_NULLPTR));
         LGDesvMulti->setText(QApplication::translate("FPImage", "S desviation multiplier", Q_NULLPTR));
         LBDesvMulti->setText(QApplication::translate("FPImage", "B desviation multiplier", Q_NULLPTR));
+        BDilate->setText(QApplication::translate("FPImage", "Dilate", Q_NULLPTR));
+        BErode->setText(QApplication::translate("FPImage", "Erode", Q_NULLPTR));
         EcranHistoR->setText(QString());
         EcranHistoG->setText(QString());
         EcranHistoB->setText(QString());

@@ -59,6 +59,68 @@ void FaceDetector::DetectSkin(float rDesvMultiplier, float gDesvMultiplier, floa
             processor->pixR[i] = skin ? processor->pixRCopy[i] : 0;
             processor->pixG[i] = skin ? processor->pixGCopy[i] : 0;
             processor->pixB[i] = skin ? processor->pixBCopy[i] : 0;
+            processor->faceMask[i / 3] = skin ? 255 : 0;
+        }
+    }
+}
+
+void FaceDetector::Dilate() {
+    //TODO
+}
+
+void FaceDetector::Erode() {
+    //TODO
+}
+
+void FaceDetector::GetNearbyPixels(uchar* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize) {
+    int nPoints = (kernelSize * kernelSize) - 1;
+    for (int i = 0; i < nPoints; i++) {
+        pos[i] = -1;
+    }
+    *count = 0;
+    int w = 0;
+
+    //calculate top left X
+    int xTemp = x - kernelSize / 2;
+    for (int i = 0; i < kernelSize; i++) {
+        //calculate top up y
+        int yTemp = y - kernelSize / 2;
+        for (int j = 0; j < kernelSize; j++) {
+            if (xTemp == x && yTemp == y) {
+                yTemp++;
+                continue;
+            }
+            //calculate position   
+            int tempPos = 0;
+            //CROP IMAGE
+            //TODO MAKE SURE CLAMP IS OK
+            if (xTemp < 0 || xTemp >= (this->processor->W / 3 - 1) || yTemp < 0 || yTemp >= (this->processor->H - 1)) {
+                tempPos = -1;
+            } else {
+                tempPos = yTemp * this->processor->S + xTemp;
+            }
+            pos[w] = tempPos;
+            w++;
+            yTemp++;
+        }
+        xTemp++;
+    }
+    //COUNT NOT NULL PIXELS
+    for (int j = 0; j < nPoints; j++) {
+        if (pos[j] > -1) {
+            (*count)++;
+        } else {
+            pos[j] = -1;
+        }
+    }
+    //allocate array
+    int k = 0;
+    //asign
+    for (int j = 0; j < nPoints; j++) {
+        int currPos = pos[j];
+        if (currPos > -1) {
+            nearbyPixels[k] = processor->faceMask[currPos];
+            k++;
         }
     }
 }
