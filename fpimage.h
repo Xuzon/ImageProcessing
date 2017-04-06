@@ -72,6 +72,7 @@ private slots:
     void RandomDithering(int value);
     void DrawHistograms();
     void SkinChange(int value);
+    void BlurInside(void);
 
 };
 

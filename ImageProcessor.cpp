@@ -1,5 +1,8 @@
 #include "ImageProcessor.h"
 
+
+#pragma region Brightness&Contrast
+
 void ImageProcessor::ChangeBrightness(int value) {
     float value02 = (float)value / (float)50;
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
@@ -14,9 +17,9 @@ void ImageProcessor::ChangeBrightness(int value) {
     }
 }
 
-void ImageProcessor::ChangeContrast(int contrast, int brightness){
+void ImageProcessor::ChangeContrast(int contrast, int brightness) {
     float fContrast = (float)contrast / 50.0;
-    float fBright = (((float)brightness / 50.0) - 1 ) * 255;
+    float fBright = (((float)brightness / 50.0) - 1) * 255;
     ContrastTransform(fContrast, fBright);
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
         for (int x = 0; x < W; x++, i += 3) {
@@ -63,7 +66,7 @@ void ImageProcessor::UserContrastTransform() {
                 lastY = nextY;
                 nextPoint = *it;
                 nextY = *slopeIt;
-                slope = Slope(lastPoint,nextPoint,lastY,nextY);
+                slope = Slope(lastPoint, nextPoint, lastY, nextY);
             } else {
                 lastPoint = nextPoint;
                 lastY = nextY;
@@ -71,7 +74,7 @@ void ImageProcessor::UserContrastTransform() {
                 slope = 1;
             }
         }
-        val = slope * (i - lastPoint )+ lastY;
+        val = slope * (i - lastPoint) + lastY;
         LUT[i] = ImageProcessor::Clamp0255(val);
     }
 }
@@ -88,7 +91,7 @@ void ImageProcessor::AddToSlope(int x, int y) {
         return;
     }
     //search for insert position
-    for (selected = 0; it != cutPoints.end(); it++,selected++) {
+    for (selected = 0; it != cutPoints.end(); it++, selected++) {
         //if I have an X same than value is duplicated
         if (*it == x) {
             duplicated = true;
@@ -111,7 +114,7 @@ void ImageProcessor::AddToSlope(int x, int y) {
     float slope = y;
     std::list<float>::iterator slopeIt = slopes.begin();
     //set the iterator at right position
-    for (int i = 0;i < selected; i++) {
+    for (int i = 0; i < selected; i++) {
         slopeIt++;
     }
     //if it is duplicated remove it
@@ -120,28 +123,9 @@ void ImageProcessor::AddToSlope(int x, int y) {
     }
     slopes.insert(slopeIt, slope);
 }
+#pragma endregion
 
-float ImageProcessor::Slope(int x1, int x2, int y1, int y2) {
-    float num = y2 - y1;
-    float div = x2 - x1;
-    return num / div;
-}
-
-int ImageProcessor::Clamp0255(int value) {
-    int toRet = value;
-    toRet = toRet > 255 ? 255 : toRet;
-    toRet = toRet < 0 ? 0 : toRet;
-    return toRet;
-}
-
-float ImageProcessor::Lerp(float x, float y, float t) {
-    return x + t * (y - x);
-}
-
-uchar ImageProcessor::Lerp(uchar x, uchar y, float t) {
-    return x + t * (y - x);
-}
-
+#pragma region BasicFilters
 void ImageProcessor::UpsideDown() {
     for (int y = 0, i = 0; y < H / 2; y++, i += Padding) {
         for (int x = 0; x < W; x++, i += 3) {
@@ -201,6 +185,28 @@ void ImageProcessor::SepiaFilter() {
     }
 }
 
+void ImageProcessor::SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB, uchar diffRG) {
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            uchar r = pixR[i];
+            uchar g = pixG[i];
+            uchar b = pixB[i];
+            uchar diff = r - g;
+            if (r < thresholdR || g < thresholdG || b < thresholdB || g > r || diff < diffRG) {
+                int outR = r * 0.393 + g * 0.769 + b * .189;
+                int outG = r * 0.349 + g * 0.686 + b * .168;
+                int outB = r * 0.272 + g * 0.534 + b * .131;
+                pixR[i] = outR > 255 ? 255 : outR;
+                pixG[i] = outG > 255 ? 255 : outG;
+                pixB[i] = outB > 255 ? 255 : outB;
+            }
+        }
+    }
+}
+#pragma endregion
+
+#pragma region Dithering
+
 void ImageProcessor::Dithering(bool random) {
 
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
@@ -221,18 +227,18 @@ void ImageProcessor::Dithering(bool random) {
             }
 
             int difference = luminance - toSet;
-  
+
             float r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
             AddDitheringNeighborValue(x, y, i, 1, r * difference * 7 / 16);
 
             r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
-            AddDitheringNeighborValue(x, y, i, W - 1,r * difference * 3 / 16);
+            AddDitheringNeighborValue(x, y, i, W - 1, r * difference * 3 / 16);
 
             r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
-            AddDitheringNeighborValue(x, y, i, W,r* difference * 5 / 16);
+            AddDitheringNeighborValue(x, y, i, W, r* difference * 5 / 16);
 
             r = random ? (0.9f + rand() % 20 / 100.0f) : 1.0f;
-            AddDitheringNeighborValue(x, y, i, W + 1,r* difference / 16);
+            AddDitheringNeighborValue(x, y, i, W + 1, r* difference / 16);
 
             pixR[i] = toSet;
             pixG[i] = toSet;
@@ -241,32 +247,21 @@ void ImageProcessor::Dithering(bool random) {
     }
 }
 
-int ImageProcessor::Luminance(uchar r, uchar g, uchar b) {
-    return r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
-}
 
-int ImageProcessor::Cr(uchar r, uchar g, uchar b) {
-    return -0.147 * r - 0.289 * g + 0.436 * b;
-}
-
-int ImageProcessor::Cb(uchar r, uchar g, uchar b) {
-    return 0.615 * r - 0.515 * g - 0.100 * b;
-}
-
-void ImageProcessor::AddDitheringNeighborValue(int x, int y, int pos, int neighbor,int error) {
+void ImageProcessor::AddDitheringNeighborValue(int x, int y, int pos, int neighbor, int error) {
     //keep sure crop image
     if (x == 0 && neighbor == W - 1) {
         return;
     }
 
-    if (x == W - 1 && ((neighbor == W + 1) || (neighbor == 1) )) {
+    if (x == W - 1 && ((neighbor == W + 1) || (neighbor == 1))) {
         return;
     }
 
     if (y == H - 1 && neighbor != 1) {
         return;
     }
-   
+
     int  iR = Clamp0255(pixR[pos + 3 * neighbor] + error);
     int iG = Clamp0255(pixG[pos + 3 * neighbor] + error);
     int iB = Clamp0255(pixB[pos + 3 * neighbor] + error);
@@ -281,29 +276,138 @@ void ImageProcessor::AddDitheringNeighborValue(int x, int y, int pos, int neighb
     pixB[pos + 3 * neighbor] = iB;
 }
 
-void ImageProcessor::SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB,          uchar diffRG) {
+#pragma endregion
+
+#pragma region StaticAux
+int ImageProcessor::Luminance(uchar r, uchar g, uchar b) {
+    return r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
+}
+
+int ImageProcessor::Cr(uchar r, uchar g, uchar b) {
+    return -0.147 * r - 0.289 * g + 0.436 * b;
+}
+
+int ImageProcessor::Cb(uchar r, uchar g, uchar b) {
+    return 0.615 * r - 0.515 * g - 0.100 * b;
+}
+
+
+float ImageProcessor::Slope(int x1, int x2, int y1, int y2) {
+    float num = y2 - y1;
+    float div = x2 - x1;
+    return num / div;
+}
+
+int ImageProcessor::Clamp0255(int value) {
+    int toRet = value;
+    toRet = toRet > 255 ? 255 : toRet;
+    toRet = toRet < 0 ? 0 : toRet;
+    return toRet;
+}
+
+float ImageProcessor::Lerp(float x, float y, float t) {
+    return x + t * (y - x);
+}
+
+uchar ImageProcessor::Lerp(uchar x, uchar y, float t) {
+    return x + t * (y - x);
+}
+#pragma endregion
+
+#pragma region ConvolutionFilters
+///
+///Applies a blur to the image
+///6 times needed for skin detection
+void ImageProcessor::Blur(int kernelSize) {
+    int sqKernelMinusOne = kernelSize * kernelSize - 1;
+    Vector3* nearbyPixels = new Vector3[sqKernelMinusOne];
+    int* buffPos = new int[sqKernelMinusOne];
     for (int y = 0, i = 0; y < H; y++, i += Padding) {
         for (int x = 0; x < W; x++, i += 3) {
-            uchar r = pixR[i];
-            uchar g = pixG[i];
-            uchar b = pixB[i];
-            uchar diff = r - g;
-            if (r < thresholdR || g < thresholdG || b < thresholdB || g > r || diff < diffRG) {
-                int outR = r * 0.393 + g * 0.769 + b * .189;
-                int outG = r * 0.349 + g * 0.686 + b * .168;
-                int outB = r * 0.272 + g * 0.534 + b * .131;
-                pixR[i] = outR > 255 ? 255 : outR;
-                pixG[i] = outG > 255 ? 255 : outG;
-                pixB[i] = outB > 255 ? 255 : outB;
+            float r = pixR[i];
+            float g = pixG[i];
+            float b = pixB[i];
+            int count = 0;
+            GetNearbyPixels(nearbyPixels, &count, x, y, buffPos, kernelSize);
+            for (int j = 0; j < count; j++) {
+                r += nearbyPixels[j].x;
+                g += nearbyPixels[j].y;
+                b += nearbyPixels[j].z;
             }
+
+            pixR[i] = r / (count + 1);
+            pixG[i] = g / (count + 1);
+            pixB[i] = b / (count + 1);
         }
     }
+    delete[] nearbyPixels;
+    delete[] buffPos;
+}
+
+///
+///Applies a blur to the objects of image
+///
+void ImageProcessor::BlurInsideObjects(int kernelSize, float threshold, EdgeMetric metric) {
+    this->Edges(threshold, metric);
+    int sqKernelMinusOne = kernelSize * kernelSize - 1;
+    Vector3* nearbyPixels = new Vector3[sqKernelMinusOne];
+    int* buffPos = new int[sqKernelMinusOne];
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            float r = pixRCopy[i];
+            float g = pixGCopy[i];
+            float b = pixBCopy[i];
+            int count = 0;
+            GetNearbyPixelsInsideObjects(nearbyPixels, &count, x, y, buffPos, kernelSize);
+            for (int j = 0; j < count; j++) {
+                r += nearbyPixels[j].x;
+                g += nearbyPixels[j].y;
+                b += nearbyPixels[j].z;
+            }
+
+            pixR[i] = r / (count + 1);
+            pixG[i] = g / (count + 1);
+            pixB[i] = b / (count + 1);
+        }
+    }
+    delete[] nearbyPixels;
+    delete[] buffPos;
+}
+
+
+///
+///SHARPENING FILTER
+///
+void ImageProcessor::Sharpening(int kernelSize) {
+    int sqKernelMinusOne = kernelSize * kernelSize - 1;
+    Vector3* nearbyPixels = new Vector3[sqKernelMinusOne];
+    int* buffPos = new int[sqKernelMinusOne];
+    for (int y = 0, i = 0; y < H; y++, i += Padding) {
+        for (int x = 0; x < W; x++, i += 3) {
+            float r = (sqKernelMinusOne + 1) * pixR[i];
+            float g = (sqKernelMinusOne + 1) * pixG[i];
+            float b = (sqKernelMinusOne + 1) * pixB[i];
+            int count = 0;
+            GetNearbyPixelsOfCopy(nearbyPixels, &count, x, y, buffPos, kernelSize);
+            for (int j = 0; j < count; j++) {
+                r -= nearbyPixels[j].x;
+                g -= nearbyPixels[j].y;
+                b -= nearbyPixels[j].z;
+            }
+
+            pixR[i] = Clamp0255(r);
+            pixG[i] = Clamp0255(g);
+            pixB[i] = Clamp0255(b);
+        }
+    }
+    delete[] nearbyPixels;
+    delete[] buffPos;
 }
 
 ///
 ///Show in white (255,255,255) the edges
 ///
-void ImageProcessor::Edges(float threshold,EdgeMetric metric) {
+void ImageProcessor::Edges(float threshold, EdgeMetric metric) {
     float calculatedThreshold = threshold;
     if (metric == EdgeMetric::EuclideanDistance) {
         calculatedThreshold *= calculatedThreshold;
@@ -319,7 +423,7 @@ void ImageProcessor::Edges(float threshold,EdgeMetric metric) {
             pixel->SetValues(r, g, b);
             r = g = b = 0;
             int count = 0;
-            GetNearbyPixels(nearbyPixels,i, &count,x,buffPos);
+            GetNearbyPixelsOfCopy(nearbyPixels, &count, x, y, buffPos, 3);
             for (int j = 0; j < count; j++) {
                 float edge = 0;
                 switch (metric) {
@@ -347,35 +451,45 @@ void ImageProcessor::Edges(float threshold,EdgeMetric metric) {
     delete pixel;
 }
 
-void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, int x, int* pos) {
-    for (int i = 0; i < 8; i++) {
+
+#pragma endregion
+
+
+#pragma region Aux
+void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize) {
+    int nPoints = (kernelSize * kernelSize) - 1;
+    for (int i = 0; i < nPoints; i++) {
         pos[i] = -1;
     }
     *count = 0;
-    //upper positions
-    pos[0] = i - S - 3;
-    pos[1] = i - S;
-    pos[2] = i - S + 3;
-    //middle positions
-    pos[3] = i - 3;
-    pos[4] = i + 3;
-    //lower positions
-    pos[5] = i + S - 3;
-    pos[6] = i + S;
-    pos[7] = i + S + 3;
+    int w = 0;
 
-    //Crop the image at left
-    if (x == 0) {
-        pos[0] = pos[3] = pos[5] = -1;
+    //calculate top left X
+    int xTemp = x - kernelSize / 2;
+    for (int i = 0; i < kernelSize; i++) {
+        //calculate top up y
+        int yTemp = y - kernelSize / 2;
+        for (int j = 0; j < kernelSize; j++) {
+            if (xTemp == x && yTemp == y) {
+                yTemp++;
+                continue;
+            }
+            //calculate position   
+            int tempPos = 0;
+            //CROP IMAGE
+            if (xTemp < 0 || xTemp >= (W - 1) || yTemp < 0 || yTemp >= (H - 1)) {
+                tempPos = -1;
+            } else {
+                tempPos = yTemp * S + xTemp * 3;
+            }
+            pos[w] = tempPos;
+            w++;
+            yTemp++;
+        }
+        xTemp++;
     }
-
-    //Crop the image at right
-    if (x == (W - 1)) {
-        pos[2] = pos[4] = pos[7] = -1;
-    }
-
-    //Crop the image up and down
-    for (int j = 0; j < 8; j++) {
+    //COUNT NOT NULL PIXELS
+    for (int j = 0; j < nPoints; j++) {
         if (pos[j] > -1 && pos[j] < S * H) {
             (*count)++;
         } else {
@@ -385,7 +499,61 @@ void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, i
     //allocate array
     int k = 0;
     //asign
-    for (int j = 0; j < 8; j++) {
+    for (int j = 0; j < nPoints; j++) {
+        int currPos = pos[j];
+        if (currPos > -1) {
+            nearbyPixels[k].x = pixR[currPos];
+            nearbyPixels[k].y = pixG[currPos];
+            nearbyPixels[k].z = pixB[currPos];
+            k++;
+        }
+    }
+}
+
+void ImageProcessor::GetNearbyPixelsOfCopy(Vector3* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize) {
+    int nPoints = (kernelSize * kernelSize) - 1;
+    for (int i = 0; i < nPoints; i++) {
+        pos[i] = -1;
+    }
+    *count = 0;
+    int w = 0;
+
+    //calculate top left X
+    int xTemp = x - kernelSize / 2;
+    for (int i = 0; i < kernelSize; i++) {
+        //calculate top up y
+        int yTemp = y - kernelSize / 2;
+        for (int j = 0; j < kernelSize; j++) {
+            if (xTemp == x && yTemp == y) {
+                yTemp++;
+                continue;
+            }
+            //calculate position   
+            int tempPos = 0;
+            //CROP IMAGE
+            if (xTemp < 0 || xTemp >= (W - 1) || yTemp < 0 || yTemp >= (H - 1)) {
+                tempPos = -1;
+            } else {
+                tempPos = yTemp * S + xTemp * 3;
+            }
+            pos[w] = tempPos;
+            w++;
+            yTemp++;
+        }
+        xTemp++;
+    }
+    //COUNT NOT NULL PIXELS
+    for (int j = 0; j < nPoints; j++) {
+        if (pos[j] > -1 && pos[j] < S * H) {
+            (*count)++;
+        } else {
+            pos[j] = -1;
+        }
+    }
+    //allocate array
+    int k = 0;
+    //asign
+    for (int j = 0; j < nPoints; j++) {
         int currPos = pos[j];
         if (currPos > -1) {
             nearbyPixels[k].x = pixRCopy[currPos];
@@ -396,6 +564,86 @@ void ImageProcessor::GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, i
     }
 }
 
+void ImageProcessor::GetNearbyPixelsInsideObjects(Vector3* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize) {
+    //-1 = invalid pixel
+    //-2 = edge
+    int nPoints = (kernelSize * kernelSize) - 1;
+    for (int i = 0; i < nPoints; i++) {
+        pos[i] = -1;
+    }
+    *count = 0;
+    int w = 0;
+
+    //calculate top left X
+    int xTemp = x - kernelSize / 2;
+    for (int i = 0; i < kernelSize; i++) {
+        //calculate top up y
+        int yTemp = y - kernelSize / 2;
+        for (int j = 0; j < kernelSize; j++) {
+            if (xTemp == x && yTemp == y) {
+                yTemp++;
+                continue;
+            }
+            //calculate position   
+            int tempPos = 0;
+            //CROP IMAGE
+            if (xTemp < 0 || xTemp >= (W - 1) || yTemp < 0 || yTemp >= (H - 1)) {
+                tempPos = -1;
+            } else {
+                tempPos = yTemp * S + xTemp * 3;
+            }
+            if (tempPos == -1 || tempPos == -2) {
+                pos[w] = tempPos;
+                w++;
+                yTemp++;
+                continue;
+            }
+            //if it is an edge
+            if (pixR[tempPos] == 255 && pixG[tempPos] == 255 && pixB[tempPos] == 255) {
+                tempPos = -2;
+            }
+
+            //Doesn't count if it is at the other side of an edge
+            for (int q = 0; q < kernelSize; q++) {
+                int lerpedX = Lerp((float)xTemp, x, q / (float)kernelSize);
+                int lerpedY = Lerp((float)yTemp, y, q / (float)kernelSize);
+                int lerpedPos = lerpedY * S + lerpedX * 3;
+                //check if is an edge between the position and the center pixel
+                if (pixR[lerpedPos] == 255 && pixG[lerpedPos] == 255 && pixB[lerpedPos] == 255) {
+                    tempPos = -1;
+                }
+            }
+            pos[w] = tempPos;
+            w++;
+            yTemp++;
+        }
+        xTemp++;
+    }
+    //COUNT NOT NULL PIXELS
+    for (int j = 0; j < nPoints; j++) {
+        if (pos[j] > -1 && pos[j] < S * H) {
+            (*count)++;
+        } else {
+            pos[j] = -1;
+        }
+    }
+    //allocate array
+    int k = 0;
+    //asign
+    for (int j = 0; j < nPoints; j++) {
+        int currPos = pos[j];
+        if (currPos > -1) {
+            nearbyPixels[k].x = pixRCopy[currPos];
+            nearbyPixels[k].y = pixGCopy[currPos];
+            nearbyPixels[k].z = pixBCopy[currPos];
+            k++;
+        }
+    }
+}
+
+#pragma endregion
+
+#pragma region Histograms
 ///
 ///Returns the histograms normalized to the maximum value of each
 ///histogram to 99
@@ -645,6 +893,8 @@ void ImageProcessor::HistogramEqualizationValues(int* histogram, float div, int 
     myLUT[value] = Clamp0255((int)(val * 255.0f / div));
 }
 
+#pragma endregion
+
 void ImageProcessor::CreateLHS() {
     if (pixL) {
         delete[] pixL;
@@ -676,8 +926,11 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     //this->faceDetector = new FaceDetector(this);
     this->pixL = NULL;
     this->CreateLHS();
-    this->faceDetector = new FaceDetector(this,new Vector3(125,138,7),new Vector3(154,71,17), 5884620
-        , 3607851, 53067,149);
+    this->faceDetector = new FaceDetector(this);
+    /*this->faceDetector = new FaceDetector(this,new Vector3(125,138,7),new Vector3(154,71,17), 5884620
+        , 3607851, 53067,149);*/
+    this->faceDetector = new FaceDetector(this,new Vector3(200,152,11),new Vector3(68,49,16), 2009234
+        , 1150710, 17087,45);
 }
 
 ImageProcessor::~ImageProcessor() {

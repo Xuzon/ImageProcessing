@@ -17,8 +17,23 @@ public:
     ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int H, int Padding, int S);
     ~ImageProcessor();
 
-    FaceDetector* faceDetector;
+    
 
+
+
+    #pragma region ConvolutionFilters
+    //*********CONVOLUTION FILTERS****************
+    void Blur(int kernelSize);
+
+    void BlurInsideObjects(int kernelSize, float threshold, EdgeMetric metric);
+
+    void Sharpening(int kernelSize);
+
+    void Edges(float threshold, EdgeMetric metric);
+    //********************************************
+    #pragma endregion
+
+    #pragma region BasicFilters
     void UpsideDown();
 
     void Invert();
@@ -27,24 +42,26 @@ public:
 
     void SepiaFilter();
 
-    void SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB,uchar diffRG);
+    void SepiaFilter(uchar thresholdR, uchar thresholdG, uchar thresholdB, uchar diffRG);
+    #pragma endregion
 
+    #pragma region Dithering
     void Dithering(bool random);
 
-    void AddDitheringNeighborValue(int x, int y,int pos,int neighbor,int luminance);
+    void AddDitheringNeighborValue(int x, int y, int pos, int neighbor, int luminance);
+    #pragma endregion
 
+    #pragma region Brightness&Contrast
     void ChangeBrightness(int value);
 
-    void ChangeContrast(int contrast,int brightness);
-
-    void Edges(float threshold,EdgeMetric metric);
-
-    void GetNearbyPixels(Vector3* nearbyPixels, int i, int* count, int x, int* pos);
+    void ChangeContrast(int contrast, int brightness);
 
     void ContrastTransform(float alpha, float beta);
 
     void UserContrastTransform();
+    #pragma endregion
 
+    #pragma region Histograms
     ///
     ///Returns the histograms normalized to the maximum value of each
     ///histogram to 99
@@ -73,13 +90,23 @@ public:
     ///
     ///Calculate nearby histograms
     ///
-    void NearbyHistograms(int pos, int x, int y,int neighborhood, int* rHistogram, int* gHistogram, int* bHistogram);
+    void NearbyHistograms(int pos, int x, int y, int neighborhood, int* rHistogram, int* gHistogram, int* bHistogram);
     ///
     ///Equalizate histogram only adquiring the value we want
     ///
-    void HistogramEqualizationValues(int* histogram,float div,int value, uchar* myLUT);
+    void HistogramEqualizationValues(int* histogram, float div, int value, uchar* myLUT);
+    #pragma endregion
 
+    #pragma region Aux
+    void GetNearbyPixels(Vector3* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize);
 
+    void GetNearbyPixelsOfCopy(Vector3* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize);
+
+    void GetNearbyPixelsInsideObjects(Vector3* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize);
+
+    #pragma endregion
+
+    #pragma region StaticAux
     static float Lerp(float x, float y, float t);
 
     static uchar Lerp(uchar x, uchar y, float t);
@@ -93,6 +120,12 @@ public:
     static int Cr(uchar r, uchar g, uchar b);
 
     static int Cb(uchar r, uchar g, uchar b);
+    #pragma endregion
+
+
+
+    
+    FaceDetector* faceDetector;
 
     uchar LUT[256];
 
@@ -114,12 +147,10 @@ public:
 private:
     uchar *copyImage;
 
-
-
-
     std::list<int> cutPoints;
     std::list<float> slopes;
 
+    #pragma region Histograms
     ///
     ///Get init and end values of histogram and then apply the linear stretch
     ///
@@ -134,6 +165,8 @@ private:
     ///Apply the Vogue stretch interpolation to a value
     ///
     uchar VogueStretchInterpolation(int iniPos, int endPos, int maxValuePos, int* histo, int value);
+    #pragma endregion
+    
 };
 
 

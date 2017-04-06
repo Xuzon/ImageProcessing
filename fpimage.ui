@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1184</width>
-    <height>1195</height>
+    <width>1264</width>
+    <height>743</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,8 +62,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>728</width>
-         <height>1120</height>
+         <width>809</width>
+         <height>668</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -81,276 +81,9 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QLabel" name="EcranHistoR">
-        <property name="minimumSize">
-         <size>
-          <width>260</width>
-          <height>104</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>260</width>
-          <height>104</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Panel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="midLineWidth">
-         <number>0</number>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="EcranHistoG">
-        <property name="minimumSize">
-         <size>
-          <width>260</width>
-          <height>104</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>260</width>
-          <height>104</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Panel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="EcranHistoB">
-        <property name="minimumSize">
-         <size>
-          <width>260</width>
-          <height>104</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>260</width>
-          <height>104</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Panel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="LBrightness">
-        <property name="text">
-         <string>Brightness</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="SliderBrightness">
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>50</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="LContrast">
-        <property name="text">
-         <string>Contrast</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="SliderContrast">
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>50</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="LEdges">
-        <property name="text">
-         <string>Edges</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="SliderEdges">
-        <property name="maximum">
-         <number>300</number>
-        </property>
-        <property name="value">
-         <number>100</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="RadioEdgeGroup">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Edge Detection Method</string>
-        </property>
-        <widget class="QRadioButton" name="EuclideanRButton">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>20</y>
-           <width>260</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Euclidean</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="AbsDifferenceRButton">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>40</y>
-           <width>260</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>AbsDifference</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="MaxDifferenceRButton">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>60</y>
-           <width>260</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>MaxDifference</string>
-         </property>
-        </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="CheckRandomDithering">
-        <property name="text">
-         <string>Random Dithering</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="LAdaptEq">
-        <property name="text">
-         <string>Adapatative equalization Neighborhood</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="SliderAdaptEq">
-        <property name="minimum">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <number>21</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="TransferenceFunction">
-        <property name="minimumSize">
-         <size>
-          <width>256</width>
-          <height>256</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>256</width>
-          <height>256</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Panel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="lineWidth">
-         <number>2</number>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BHistogram">
-        <property name="text">
-         <string>Do Histograms</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLabel" name="LRDesvMulti">
         <property name="text">
-         <string>R desviation multiplier</string>
+         <string>L desviation multiplier</string>
         </property>
        </widget>
       </item>
@@ -370,7 +103,7 @@
       <item>
        <widget class="QLabel" name="LGDesvMulti">
         <property name="text">
-         <string>G desviation multiplier</string>
+         <string>S desviation multiplier</string>
         </property>
        </widget>
       </item>
@@ -408,6 +141,440 @@
        </widget>
       </item>
       <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="minimumSize">
+         <size>
+          <width>256</width>
+          <height>500</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
+          <string>Histograms Brightness and Contrast</string>
+         </attribute>
+         <widget class="QLabel" name="EcranHistoR">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>260</width>
+            <height>104</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>260</width>
+            <height>104</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>260</width>
+            <height>104</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <property name="midLineWidth">
+           <number>0</number>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="EcranHistoG">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>100</y>
+            <width>260</width>
+            <height>104</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>260</width>
+            <height>104</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>260</width>
+            <height>104</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="EcranHistoB">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>200</y>
+            <width>260</width>
+            <height>104</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>260</width>
+            <height>104</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>260</width>
+            <height>104</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="BHistogram">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>300</y>
+            <width>256</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Do Histograms</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="SliderBrightness">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>340</y>
+            <width>256</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="LBrightness">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>330</y>
+            <width>256</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Brightness</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="LContrast">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>350</y>
+            <width>256</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Contrast</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="SliderContrast">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>370</y>
+            <width>256</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="TransferenceFunction">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>390</y>
+            <width>256</width>
+            <height>256</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>256</width>
+            <height>256</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>256</width>
+            <height>256</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+         <widget class="QLabel" name="LEdges">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>0</y>
+            <width>256</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Edges</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="SliderEdges">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>256</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>300</number>
+          </property>
+          <property name="value">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QGroupBox" name="RadioEdgeGroup">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>40</y>
+            <width>256</width>
+            <height>100</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Edge Detection Method</string>
+          </property>
+          <widget class="QRadioButton" name="EuclideanRButton">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>20</y>
+             <width>260</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Euclidean</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QRadioButton" name="AbsDifferenceRButton">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>40</y>
+             <width>260</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>AbsDifference</string>
+           </property>
+          </widget>
+          <widget class="QRadioButton" name="MaxDifferenceRButton">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>60</y>
+             <width>260</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>MaxDifference</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="CheckRandomDithering">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>80</y>
+             <width>256</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Random Dithering</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QLabel" name="LAdaptEq">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>140</y>
+            <width>256</width>
+            <height>13</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Adapatative equalization Neighborhood</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="SliderAdaptEq">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>160</y>
+            <width>256</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>5</number>
+          </property>
+          <property name="maximum">
+           <number>21</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="LKernel">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>190</y>
+            <width>71</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Blur Kernel</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="SliderKernel">
+          <property name="geometry">
+           <rect>
+            <x>-1</x>
+            <y>211</y>
+            <width>251</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>3</number>
+          </property>
+          <property name="maximum">
+           <number>9</number>
+          </property>
+          <property name="singleStep">
+           <number>2</number>
+          </property>
+          <property name="pageStep">
+           <number>2</number>
+          </property>
+          <property name="sliderPosition">
+           <number>3</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="BBlurInside">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>240</y>
+            <width>75</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>BlurInside</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -429,7 +596,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1184</width>
+     <width>1264</width>
      <height>21</height>
     </rect>
    </property>

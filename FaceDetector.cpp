@@ -31,7 +31,8 @@ void FaceDetector::DetectSkin(float rDesvMultiplier, float gDesvMultiplier, floa
     for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
         for (int x = 0; x < processor->W; x++, i += 3) {
             bool skin = true;
-            /*if (processor->pixRCopy[i] > average.x + rDesvMultiplier * typicalDesviation.x || processor->pixRCopy[i] < average.x - rDesvMultiplier * typicalDesviation.x) {
+            /*BOX DELIMITER
+            if (processor->pixRCopy[i] > average.x + rDesvMultiplier * typicalDesviation.x || processor->pixRCopy[i] < average.x - rDesvMultiplier * typicalDesviation.x) {
                 skin = false;
             }
             if (processor->pixGCopy[i] > average.y + gDesvMultiplier * typicalDesviation.y || processor->pixGCopy[i] < average.y - gDesvMultiplier * typicalDesviation.y) {

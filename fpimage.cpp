@@ -108,6 +108,8 @@ FPImage::FPImage(QWidget *parent) :
     connect(ui->SliderGDesv, SIGNAL(valueChanged(int)), this, SLOT(SkinChange(int)));
     connect(ui->SliderBDesv, SIGNAL(valueChanged(int)), this, SLOT(SkinChange(int)));
 
+    connect(ui->BBlurInside, SIGNAL(clicked()), this, SLOT(BlurInside()));
+
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
     // para capturar clicks de ratón sobre la imagen
@@ -256,7 +258,10 @@ void FPImage::DoIt(void){
     //this->DrawHistograms();
     //this->DrawTransferenceFunction();
     
-    this->SkinChange(0);
+    //this->SkinChange(0);
+    this->processor->Blur(this->ui->SliderKernel->value());
+    //this->processor->Sharpening(this->ui->SliderKernel->value());
+    //this->processor->BlurInsideObjects(this->ui->SliderKernel->value(), this->ui->SliderEdges->value(), edgeMetric);
 
     // Ejemplo de procesamiento CON OpenCV
 //OCV     Mat radio5(11,11,CV_8U,Scalar(0));
@@ -276,10 +281,20 @@ void FPImage::DoIt(void){
     ShowIt();
 }
 
+void FPImage::BlurInside(void) {
+    if (!H) return;
+    this->processor->BlurInsideObjects(this->ui->SliderKernel->value(), this->ui->SliderEdges->value(), edgeMetric);
+    ShowIt();
+}
+
 void FPImage::SkinChange(int value) {
     float rDesv = this->ui->SliderRDesv->value() / 100.0f;
     float gDesv = this->ui->SliderGDesv->value() / 100.0f;
     float bDesv = this->ui->SliderBDesv->value() / 100.0f;
+    for (int i = 0; i < 6; i++) {
+        processor->Blur(this->ui->SliderKernel->value());
+    }
+    processor->CreateLHS();
     processor->faceDetector->DetectSkin(rDesv, gDesv, bDesv);
 }
 void FPImage::ChangeBrightness(int value) {
