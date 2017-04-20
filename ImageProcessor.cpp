@@ -919,6 +919,7 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     this->S = S;
     this->copyImage = new uchar[S * H];
     this->faceMask = new uchar[S * H / 3];
+    this->faceMaskBackup = new uchar[S * H / 3];
     memcpy(this->copyImage, this->pixR,H * S);
     pixBCopy = (pixGCopy = (pixRCopy = copyImage) + 1) + 1;
     for (int i = 0; i < 256; i++) {
@@ -927,11 +928,13 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     //this->faceDetector = new FaceDetector(this);
     this->pixL = NULL;
     this->CreateLHS();
-    this->faceDetector = new FaceDetector(this);
+    //this->faceDetector = new FaceDetector(this);
     /*this->faceDetector = new FaceDetector(this,new Vector3(125,138,7),new Vector3(154,71,17), 5884620
         , 3607851, 53067,149);*/
-    this->faceDetector = new FaceDetector(this,new Vector3(200,152,11),new Vector3(68,49,16), 2009234
-        , 1150710, 17087,45);
+    /*this->faceDetector = new FaceDetector(this,new Vector3(200,152,11),new Vector3(68,49,16), 2009234
+        , 1150710, 17087,45);*/
+    this->faceDetector = new FaceDetector(this,new Vector3(202,151,16),new Vector3(43,41,11), 982537
+    , 564648, 9049,23);
 }
 
 ImageProcessor::~ImageProcessor() {
@@ -939,6 +942,7 @@ ImageProcessor::~ImageProcessor() {
         delete[] copyImage;
         delete[] pixL;
         delete[] faceMask;
+        delete[] faceMaskBackup;
     }
     delete this->faceDetector;
 }

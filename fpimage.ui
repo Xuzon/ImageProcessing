@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1264</width>
-    <height>743</height>
+    <height>833</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,7 +63,7 @@
          <x>0</x>
          <y>0</y>
          <width>809</width>
-         <height>668</height>
+         <height>758</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -134,6 +134,39 @@
         </property>
         <property name="sliderPosition">
          <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BDetectSkin">
+        <property name="text">
+         <string>Detect Skin</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Mask kernel size</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderBlobKernel">
+        <property name="minimum">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <number>15</number>
+        </property>
+        <property name="singleStep">
+         <number>2</number>
+        </property>
+        <property name="pageStep">
+         <number>4</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

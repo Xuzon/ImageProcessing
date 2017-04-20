@@ -58,6 +58,8 @@ public:
     QSlider *SliderGDesv;
     QLabel *LBDesvMulti;
     QSlider *SliderBDesv;
+    QPushButton *BDetectSkin;
+    QSlider *SliderBlobKernel;
     QPushButton *BDilate;
     QPushButton *BErode;
     QTabWidget *tabWidget;
@@ -93,7 +95,7 @@ public:
     {
         if (FPImage->objectName().isEmpty())
             FPImage->setObjectName(QStringLiteral("FPImage"));
-        FPImage->resize(1264, 743);
+        FPImage->resize(1264, 833);
         centralWidget = new QWidget(FPImage);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -140,7 +142,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 809, 668));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 809, 758));
         gridLayout = new QGridLayout(scrollAreaWidgetContents);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -195,6 +197,21 @@ public:
         SliderBDesv->setOrientation(Qt::Horizontal);
 
         verticalLayout_2->addWidget(SliderBDesv);
+
+        BDetectSkin = new QPushButton(centralWidget);
+        BDetectSkin->setObjectName(QStringLiteral("BDetectSkin"));
+
+        verticalLayout_2->addWidget(BDetectSkin);
+
+        SliderBlobKernel = new QSlider(centralWidget);
+        SliderBlobKernel->setObjectName(QStringLiteral("SliderBlobKernel"));
+        SliderBlobKernel->setMinimum(3);
+        SliderBlobKernel->setMaximum(15);
+        SliderBlobKernel->setSingleStep(2);
+        SliderBlobKernel->setPageStep(4);
+        SliderBlobKernel->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderBlobKernel);
 
         BDilate = new QPushButton(centralWidget);
         BDilate->setObjectName(QStringLiteral("BDilate"));
@@ -361,6 +378,7 @@ public:
         LRDesvMulti->setText(QApplication::translate("FPImage", "L desviation multiplier", Q_NULLPTR));
         LGDesvMulti->setText(QApplication::translate("FPImage", "S desviation multiplier", Q_NULLPTR));
         LBDesvMulti->setText(QApplication::translate("FPImage", "B desviation multiplier", Q_NULLPTR));
+        BDetectSkin->setText(QApplication::translate("FPImage", "Detect Skin", Q_NULLPTR));
         BDilate->setText(QApplication::translate("FPImage", "Dilate", Q_NULLPTR));
         BErode->setText(QApplication::translate("FPImage", "Erode", Q_NULLPTR));
         EcranHistoR->setText(QString());

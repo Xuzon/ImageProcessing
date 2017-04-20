@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_FPImage_t {
-    QByteArrayData data[13];
-    char stringdata0[139];
+    QByteArrayData data[16];
+    char stringdata0[167];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -42,14 +42,18 @@ QT_MOC_LITERAL(7, 57, 10), // "ChangeEdge"
 QT_MOC_LITERAL(8, 68, 17), // "ChangedEdgeMethod"
 QT_MOC_LITERAL(9, 86, 15), // "RandomDithering"
 QT_MOC_LITERAL(10, 102, 14), // "DrawHistograms"
-QT_MOC_LITERAL(11, 117, 10), // "SkinChange"
-QT_MOC_LITERAL(12, 128, 10) // "BlurInside"
+QT_MOC_LITERAL(11, 117, 14), // "CallSkinChange"
+QT_MOC_LITERAL(12, 132, 10), // "SkinChange"
+QT_MOC_LITERAL(13, 143, 10), // "BlurInside"
+QT_MOC_LITERAL(14, 154, 6), // "Dilate"
+QT_MOC_LITERAL(15, 161, 5) // "Erode"
 
     },
     "FPImage\0Load\0\0DoIt\0ChangeBrightness\0"
     "value\0ChangeContrast\0ChangeEdge\0"
     "ChangedEdgeMethod\0RandomDithering\0"
-    "DrawHistograms\0SkinChange\0BlurInside"
+    "DrawHistograms\0CallSkinChange\0SkinChange\0"
+    "BlurInside\0Dilate\0Erode"
 };
 #undef QT_MOC_LITERAL
 
@@ -59,7 +63,7 @@ static const uint qt_meta_data_FPImage[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,16 +71,19 @@ static const uint qt_meta_data_FPImage[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   64,    2, 0x08 /* Private */,
-       3,    0,   65,    2, 0x08 /* Private */,
-       4,    1,   66,    2, 0x08 /* Private */,
-       6,    1,   69,    2, 0x08 /* Private */,
-       7,    1,   72,    2, 0x08 /* Private */,
-       8,    0,   75,    2, 0x08 /* Private */,
-       9,    1,   76,    2, 0x08 /* Private */,
-      10,    0,   79,    2, 0x08 /* Private */,
-      11,    1,   80,    2, 0x08 /* Private */,
-      12,    0,   83,    2, 0x08 /* Private */,
+       1,    0,   79,    2, 0x08 /* Private */,
+       3,    0,   80,    2, 0x08 /* Private */,
+       4,    1,   81,    2, 0x08 /* Private */,
+       6,    1,   84,    2, 0x08 /* Private */,
+       7,    1,   87,    2, 0x08 /* Private */,
+       8,    0,   90,    2, 0x08 /* Private */,
+       9,    1,   91,    2, 0x08 /* Private */,
+      10,    0,   94,    2, 0x08 /* Private */,
+      11,    0,   95,    2, 0x08 /* Private */,
+      12,    1,   96,    2, 0x08 /* Private */,
+      13,    0,   99,    2, 0x08 /* Private */,
+      14,    0,  100,    2, 0x08 /* Private */,
+      15,    0,  101,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -87,7 +94,10 @@ static const uint qt_meta_data_FPImage[] = {
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    5,
     QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    5,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -107,8 +117,11 @@ void FPImage::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 5: _t->ChangedEdgeMethod(); break;
         case 6: _t->RandomDithering((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 7: _t->DrawHistograms(); break;
-        case 8: _t->SkinChange((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 9: _t->BlurInside(); break;
+        case 8: _t->CallSkinChange(); break;
+        case 9: _t->SkinChange((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 10: _t->BlurInside(); break;
+        case 11: _t->Dilate(); break;
+        case 12: _t->Erode(); break;
         default: ;
         }
     }
@@ -139,13 +152,13 @@ int FPImage::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 13)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 10;
+        _id -= 13;
     }
     return _id;
 }

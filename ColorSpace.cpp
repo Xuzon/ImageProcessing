@@ -27,7 +27,8 @@ void ColorSpace::RGBtoXYZ(float* r, float* g, float* b) {
     ColorSpace::Normalize(r, g, b);
     float x = 0.412453f * (*r) + 0.357580f * (*g) + 0.180423f * (*b);
     float y = 0.212671f * (*r) + 0.715160f * (*g) + 0.072169f * (*b);
-    float z = 0.019334f * (*r) + 0.119193f * (*g) + 0.950227f        * (*b);
+    float z = 0.019334f * (*r) + 0.119193f * (*g) + 0.950227f
+        * (*b);
     (*r) = x;
     (*g) = y;
     (*b) = z;

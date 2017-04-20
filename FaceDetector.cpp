@@ -56,71 +56,136 @@ void FaceDetector::DetectSkin(float rDesvMultiplier, float gDesvMultiplier, floa
             if (r + g + b > 1) {
                 skin = false;
             }
-            processor->pixR[i] = skin ? processor->pixRCopy[i] : 0;
-            processor->pixG[i] = skin ? processor->pixGCopy[i] : 0;
-            processor->pixB[i] = skin ? processor->pixBCopy[i] : 0;
             processor->faceMask[i / 3] = skin ? 255 : 0;
         }
     }
+
+    this->ApplyMask();
 }
 
-void FaceDetector::Dilate() {
-    //TODO
-}
-
-void FaceDetector::Erode() {
-    //TODO
-}
-
-void FaceDetector::GetNearbyPixels(uchar* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize) {
-    int nPoints = (kernelSize * kernelSize) - 1;
-    for (int i = 0; i < nPoints; i++) {
-        pos[i] = -1;
+void FaceDetector::ApplyMask() {
+    for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
+        for (int x = 0; x < processor->W; x++, i += 3) {
+            bool skin = processor->faceMask[i / 3] == 255 ? true : false;
+            processor->pixR[i] = skin ? processor->pixRCopy[i] : 0;
+            processor->pixG[i] = skin ? processor->pixGCopy[i] : 0;
+            processor->pixB[i] = skin ? processor->pixBCopy[i] : 0;
+        }
     }
-    *count = 0;
-    int w = 0;
+}
 
-    //calculate top left X
+void FaceDetector::Dilate(int kernelSize) {
+    GenerateMask(kernelSize);
+    for (int y = 0; y < processor->H; y++) {
+        for (int x = 0; x < processor->W; x++) {
+            //set the copy value
+            this->processor->faceMaskBackup[y * processor->W + x] = this->processor->faceMask[y * processor->W + x];
+            //if my facemask has a 0
+            if (this->processor->faceMask[y * processor->W + x] == 0){
+                //check if I have to dilate
+                if (AnyPixelInMask(x, y, kernelSize)) {
+                    //dilate the copy
+                    this->processor->faceMaskBackup[y * processor->W + x] = 255;
+                }
+            } 
+        }
+    }
+    memcpy(this->processor->faceMask, this->processor->faceMaskBackup,this->processor->S * this->processor->H / 3);
+    ApplyMask();
+}
+
+void FaceDetector::Erode(int kernelSize) {
+    GenerateMask(kernelSize);
+    for (int y = 0; y < processor->H; y++) {
+        for (int x = 0; x < processor->W; x++) {
+            //set the copy value
+            this->processor->faceMaskBackup[y * processor->W + x] = this->processor->faceMask[y * processor->W + x];
+            //if my facemask has a 0
+            if (this->processor->faceMask[y * processor->W + x] == 255) {
+                //check if I have to dilate
+                if (AnyNotPixelInMask(x, y, kernelSize)) {
+                    //dilate the copy
+                    this->processor->faceMaskBackup[y * processor->W + x] = 0;
+                }
+            }
+        }
+    }
+    memcpy(this->processor->faceMask, this->processor->faceMaskBackup, this->processor->S * this->processor->H / 3);
+    ApplyMask();
+}
+
+bool FaceDetector::AnyPixelInMask(int x, int y, int kernelSize) {
     int xTemp = x - kernelSize / 2;
-    for (int i = 0; i < kernelSize; i++) {
+    int maxW = this->processor->W - 1;
+    int maxH = this->processor->H - 1;
+    for (int i = 0; i < kernelSize; i++, xTemp++) {
         //calculate top up y
         int yTemp = y - kernelSize / 2;
-        for (int j = 0; j < kernelSize; j++) {
+        for (int j = 0; j < kernelSize; j++,yTemp++) {
+            //if I'm on my pixel go away
             if (xTemp == x && yTemp == y) {
-                yTemp++;
                 continue;
             }
-            //calculate position   
-            int tempPos = 0;
             //CROP IMAGE
-            //TODO MAKE SURE CLAMP IS OK
-            if (xTemp < 0 || xTemp >= (this->processor->W / 3 - 1) || yTemp < 0 || yTemp >= (this->processor->H - 1)) {
-                tempPos = -1;
-            } else {
-                tempPos = yTemp * this->processor->S + xTemp;
+            if (!(xTemp > 0 && xTemp <= maxW && yTemp > 0 && yTemp <= maxH)) {
+                continue;
             }
-            pos[w] = tempPos;
-            w++;
-            yTemp++;
-        }
-        xTemp++;
-    }
-    //COUNT NOT NULL PIXELS
-    for (int j = 0; j < nPoints; j++) {
-        if (pos[j] > -1) {
-            (*count)++;
-        } else {
-            pos[j] = -1;
+            //facemask has a 1
+            if (this->processor->faceMask[yTemp * processor->W + xTemp] == 255) {
+                //check SE has a 1 also
+                if (this->SE[j  * kernelSize + i] == 255) {
+                    return true;
+                }
+            }
         }
     }
-    //allocate array
-    int k = 0;
-    //asign
-    for (int j = 0; j < nPoints; j++) {
-        int currPos = pos[j];
-        if (currPos > -1) {
-            nearbyPixels[k] = processor->faceMask[currPos];
-            k++;
+    return false;
+}
+
+bool FaceDetector::AnyNotPixelInMask(int x, int y, int kernelSize) {
+    int xTemp = x - kernelSize / 2;
+    int maxW = this->processor->W - 1;
+    int maxH = this->processor->H - 1;
+    for (int i = 0; i < kernelSize; i++, xTemp++) {
+        //calculate top up y
+        int yTemp = y - kernelSize / 2;
+        for (int j = 0; j < kernelSize; j++, yTemp++) {
+            //if I'm on my pixel go away
+            if (xTemp == x && yTemp == y) {
+                continue;
+            }
+            //CROP IMAGE
+            if (!(xTemp > 0 && xTemp <= maxW && yTemp > 0 && yTemp <= maxH)) {
+                continue;
+            }
+            //facemask has a 0
+            if (this->processor->faceMask[yTemp * processor->W + xTemp] == 0) {
+                //check SE has a 1
+                if (this->SE[j  * kernelSize + i] == 255) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void FaceDetector::GenerateMask(int kernelSize) {
+    if (lastKernelSize == kernelSize) {
+        return;
+    }
+    lastKernelSize = kernelSize;
+    if (SE != nullptr) {
+        delete[] SE;
+    }
+    SE = new uchar[kernelSize * kernelSize];
+    int r = kernelSize / 2;
+    memset(SE, 0, kernelSize * kernelSize);
+    for (int dy = -r; dy <= r; dy++) {
+        for (int dx = -r; dx <= r; dx++) {
+            if (dy*dy + dx*dx <= r*r) {
+                SE[(r + dy) * kernelSize + (r + dx)] = 255;
+            }
         }
     }
 }

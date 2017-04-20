@@ -71,8 +71,11 @@ private slots:
     void ChangedEdgeMethod();
     void RandomDithering(int value);
     void DrawHistograms();
+    void CallSkinChange(void);
     void SkinChange(int value);
     void BlurInside(void);
+    void Dilate(void);
+    void Erode(void);
 
 };
 

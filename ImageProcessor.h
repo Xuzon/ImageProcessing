@@ -138,6 +138,7 @@ public:
     int W, H, Padding, S;
 
     uchar *faceMask;
+    uchar *faceMaskBackup;
 
     uchar *pixR, *pixG, *pixB;
 
@@ -182,9 +183,17 @@ public:
     void DetectSkin();
     void DetectSkin(float rDesvMultilier, float gDesvMultiplier, float bDesvMultiplier);
 
-    void Erode();
-    void Dilate();
-    void GetNearbyPixels(uchar* nearbyPixels, int* count, int x, int y, int* pos, int kernelSize);
+    //Basic object modelling
+    void Erode(int kernelSize);
+    void Dilate(int kernelSize);
+    void ApplyMask();
+    //mask operations
+    bool AnyPixelInMask(int x, int y, int kernelSize);
+    bool AnyNotPixelInMask(int x, int y, int kernelSize);
+    void GenerateMask(int kernelSize);
+    uchar* SE = nullptr;
+    int lastKernelSize = -1;
+
     FaceDetector(ImageProcessor* processor);
     FaceDetector(ImageProcessor* processor, Vector3* average, Vector3* typicalDesviation, int sumR, int sumG, int sumB, int count);
     FaceDetector();

@@ -110,6 +110,10 @@ FPImage::FPImage(QWidget *parent) :
 
     connect(ui->BBlurInside, SIGNAL(clicked()), this, SLOT(BlurInside()));
 
+    connect(ui->BDetectSkin, SIGNAL(clicked()), this, SLOT(CallSkinChange()));
+    connect(ui->BErode, SIGNAL(clicked()), this, SLOT(Erode()));
+    connect(ui->BDilate, SIGNAL(clicked()), this, SLOT(Dilate()));
+
 
     // "Instalamos" un "filtro de eventos" en nuestro QLabel Ecran
     // para capturar clicks de ratón sobre la imagen
@@ -287,6 +291,10 @@ void FPImage::BlurInside(void) {
     ShowIt();
 }
 
+void FPImage::CallSkinChange(void){
+    this->SkinChange(0);
+}
+
 void FPImage::SkinChange(int value) {
     float rDesv = this->ui->SliderRDesv->value() / 100.0f;
     float gDesv = this->ui->SliderGDesv->value() / 100.0f;
@@ -296,6 +304,7 @@ void FPImage::SkinChange(int value) {
     }
     processor->CreateLHS();
     processor->faceDetector->DetectSkin(rDesv, gDesv, bDesv);
+    ShowIt();
 }
 void FPImage::ChangeBrightness(int value) {
     if (processor != nullptr) {
@@ -305,6 +314,16 @@ void FPImage::ChangeBrightness(int value) {
         this->DrawTransferenceFunction();
         ShowIt();
     }
+}
+
+void FPImage::Dilate() {
+    this->processor->faceDetector->Dilate(this->ui->SliderBlobKernel->value());
+    ShowIt();
+}
+
+void FPImage::Erode() {
+    this->processor->faceDetector->Erode(this->ui->SliderBlobKernel->value());
+    ShowIt();
 }
 
 void FPImage::ChangeContrast(int value) {
