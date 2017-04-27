@@ -19,7 +19,7 @@ void FaceDetector::DetectSkin() {
             if (processor->pixBCopy[i] > average.z + typicalDesviation.z || processor->pixBCopy[i] < average.z - typicalDesviation.z) {
                 skin = false;
             }
-            uchar toSet = skin ? 255 : 0;
+            uchar toSet = skin ? 1 : 0;
             processor->pixR[i] = toSet;
             processor->pixG[i] = toSet;
             processor->pixB[i] = toSet;
@@ -56,7 +56,7 @@ void FaceDetector::DetectSkin(float rDesvMultiplier, float gDesvMultiplier, floa
             if (r + g + b > 1) {
                 skin = false;
             }
-            processor->faceMask[i / 3] = skin ? 255 : 0;
+            processor->faceMask[i / 3] = skin ? 1 : 0;
         }
     }
 
@@ -64,18 +64,26 @@ void FaceDetector::DetectSkin(float rDesvMultiplier, float gDesvMultiplier, floa
 }
 
 void FaceDetector::ApplyMask() {
-    for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
+    /*for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
         for (int x = 0; x < processor->W; x++, i += 3) {
-            bool skin = processor->faceMask[i / 3] == 255 ? true : false;
+            bool skin = processor->faceMask[i / 3] == 1 ? true : false;
             processor->pixR[i] = skin ? processor->pixRCopy[i] : 0;
             processor->pixG[i] = skin ? processor->pixGCopy[i] : 0;
             processor->pixB[i] = skin ? processor->pixBCopy[i] : 0;
         }
+    }*/
+    for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
+        for (int x = 0; x < processor->W; x++, i += 3) {
+            processor->pixR[i] = processor->pixRCopy[i];
+            processor->pixG[i] = processor->pixGCopy[i];
+            processor->pixB[i] = processor->pixBCopy[i];
+        }
     }
+    LabelFaceMask();
 }
 
-void FaceDetector::Dilate(int kernelSize) {
-    GenerateMask(kernelSize);
+void FaceDetector::Dilate(int kernelSizeX,int kernelSizeY) {
+    GenerateMask(kernelSizeX,kernelSizeY);
     for (int y = 0; y < processor->H; y++) {
         for (int x = 0; x < processor->W; x++) {
             //set the copy value
@@ -83,9 +91,9 @@ void FaceDetector::Dilate(int kernelSize) {
             //if my facemask has a 0
             if (this->processor->faceMask[y * processor->W + x] == 0){
                 //check if I have to dilate
-                if (AnyPixelInMask(x, y, kernelSize)) {
+                if (AnyPixelInMask(x, y, kernelSizeX,kernelSizeY)) {
                     //dilate the copy
-                    this->processor->faceMaskBackup[y * processor->W + x] = 255;
+                    this->processor->faceMaskBackup[y * processor->W + x] = 1;
                 }
             } 
         }
@@ -94,16 +102,16 @@ void FaceDetector::Dilate(int kernelSize) {
     ApplyMask();
 }
 
-void FaceDetector::Erode(int kernelSize) {
-    GenerateMask(kernelSize);
+void FaceDetector::Erode(int kernelSizeX,int kernelSizeY) {
+    GenerateMask(kernelSizeX,kernelSizeY);
     for (int y = 0; y < processor->H; y++) {
         for (int x = 0; x < processor->W; x++) {
             //set the copy value
             this->processor->faceMaskBackup[y * processor->W + x] = this->processor->faceMask[y * processor->W + x];
             //if my facemask has a 0
-            if (this->processor->faceMask[y * processor->W + x] == 255) {
+            if (this->processor->faceMask[y * processor->W + x] == 1) {
                 //check if I have to dilate
-                if (AnyNotPixelInMask(x, y, kernelSize)) {
+                if (AnyNotPixelInMask(x, y, kernelSizeX,kernelSizeY)) {
                     //dilate the copy
                     this->processor->faceMaskBackup[y * processor->W + x] = 0;
                 }
@@ -114,14 +122,14 @@ void FaceDetector::Erode(int kernelSize) {
     ApplyMask();
 }
 
-bool FaceDetector::AnyPixelInMask(int x, int y, int kernelSize) {
-    int xTemp = x - kernelSize / 2;
+bool FaceDetector::AnyPixelInMask(int x, int y, int kernelSizeX,int kernelSizeY) {
+    int xTemp = x - kernelSizeX / 2;
     int maxW = this->processor->W - 1;
     int maxH = this->processor->H - 1;
-    for (int i = 0; i < kernelSize; i++, xTemp++) {
+    for (int i = 0; i < kernelSizeX; i++, xTemp++) {
         //calculate top up y
-        int yTemp = y - kernelSize / 2;
-        for (int j = 0; j < kernelSize; j++,yTemp++) {
+        int yTemp = y - kernelSizeY / 2;
+        for (int j = 0; j < kernelSizeY; j++,yTemp++) {
             //if I'm on my pixel go away
             if (xTemp == x && yTemp == y) {
                 continue;
@@ -131,9 +139,9 @@ bool FaceDetector::AnyPixelInMask(int x, int y, int kernelSize) {
                 continue;
             }
             //facemask has a 1
-            if (this->processor->faceMask[yTemp * processor->W + xTemp] == 255) {
+            if (this->processor->faceMask[yTemp * processor->W + xTemp] == 1) {
                 //check SE has a 1 also
-                if (this->SE[j  * kernelSize + i] == 255) {
+                if (this->SE[j  * kernelSizeX + i] == 1) {
                     return true;
                 }
             }
@@ -142,14 +150,14 @@ bool FaceDetector::AnyPixelInMask(int x, int y, int kernelSize) {
     return false;
 }
 
-bool FaceDetector::AnyNotPixelInMask(int x, int y, int kernelSize) {
-    int xTemp = x - kernelSize / 2;
+bool FaceDetector::AnyNotPixelInMask(int x, int y, int kernelSizeX,int kernelSizeY) {
+    int xTemp = x - kernelSizeX / 2;
     int maxW = this->processor->W - 1;
     int maxH = this->processor->H - 1;
-    for (int i = 0; i < kernelSize; i++, xTemp++) {
+    for (int i = 0; i < kernelSizeX; i++, xTemp++) {
         //calculate top up y
-        int yTemp = y - kernelSize / 2;
-        for (int j = 0; j < kernelSize; j++, yTemp++) {
+        int yTemp = y - kernelSizeY / 2;
+        for (int j = 0; j < kernelSizeY; j++, yTemp++) {
             //if I'm on my pixel go away
             if (xTemp == x && yTemp == y) {
                 continue;
@@ -161,7 +169,7 @@ bool FaceDetector::AnyNotPixelInMask(int x, int y, int kernelSize) {
             //facemask has a 0
             if (this->processor->faceMask[yTemp * processor->W + xTemp] == 0) {
                 //check SE has a 1
-                if (this->SE[j  * kernelSize + i] == 255) {
+                if (this->SE[j  * kernelSizeX + i] == 1) {
                     return true;
                 }
             }
@@ -170,23 +178,145 @@ bool FaceDetector::AnyNotPixelInMask(int x, int y, int kernelSize) {
     return false;
 }
 
-void FaceDetector::GenerateMask(int kernelSize) {
-    if (lastKernelSize == kernelSize) {
+///
+///GENERATE PATTERN MASK (ELLIPSE PATTERN)
+///
+void FaceDetector::GenerateMask(int kernelSizeX,int kernelSizeY) {
+    //TODO generate mask different X and Y
+    if (lastKernelSizeX == kernelSizeX && lastKernelSizeY == kernelSizeY) {
         return;
     }
-    lastKernelSize = kernelSize;
+    lastKernelSizeX = kernelSizeX;
+    lastKernelSizeY = kernelSizeY;
+    //TODO something breaks at delete SE
     if (SE != nullptr) {
         delete[] SE;
     }
-    SE = new uchar[kernelSize * kernelSize];
-    int r = kernelSize / 2;
-    memset(SE, 0, kernelSize * kernelSize);
-    for (int dy = -r; dy <= r; dy++) {
-        for (int dx = -r; dx <= r; dx++) {
-            if (dy*dy + dx*dx <= r*r) {
-                SE[(r + dy) * kernelSize + (r + dx)] = 255;
+    SE = new uchar[kernelSizeX * kernelSizeY];
+    memset(SE, 0, kernelSizeX * kernelSizeY);
+    int height = kernelSizeY / 2;
+    int width = kernelSizeX / 2;
+    int origin = width * height / 2 + width / 2;
+    for (int y = -height; y <= height; y++) {
+        for (int x = -width; x <= width; x++) {
+            if (x*x*height*height + y*y*width*width <= height*height*width*width) {
+                if (origin + x + y * width >= kernelSizeX * kernelSizeY) {
+                    printf("HOLA");
+                }
+                SE[origin + x + y * width] = 1;
+
             }
         }
+    }
+}
+
+///
+///Label blobs
+///
+void FaceDetector::LabelFaceMask() {
+    int counter = 0;
+    if (iFaceMask != nullptr) {
+        delete[] iFaceMask;
+    }
+    iFaceMask = new int[this->processor->H * this->processor->W];
+    for (int y = 0; y < processor->H; y++) {
+        for (int x = 0; x < processor->W; x++) {
+            int pos = y * this->processor->W + x;
+            iFaceMask[pos] = this->processor->faceMask[pos];
+            iFaceMask[pos] = iFaceMask[pos] == 1 ? -1 : 0;
+        }
+    }
+    label = 0;
+    for (int y = 0; y < processor->H; y++) {
+        for (int x = 0; x < processor->W; x++) {
+            if (iFaceMask[y * this->processor->W + x] < 0) {
+                safe = 0;
+                minX = x;
+                maxX = x;
+                minY = y;
+                maxY = y;
+                label++;
+                SetLabel(x, y);
+                DrawBox(minX, minY, maxX, maxY);
+            }
+        }
+    }
+    /*//Debug blobs
+    for (int y = 0, i = 0; y < this->processor->H; y++, i += this->processor->Padding) {
+        for (int x = 0; x < this->processor->W; x++, i += 3) {
+            this->processor->pixR[i] = 13 * iFaceMask[i / 3];
+            this->processor->pixG[i] = 37 * iFaceMask[i / 3];
+            this->processor->pixB[i] = 51 * iFaceMask[i / 3];
+        }
+    }*/
+}
+
+///
+///Set the label into the iFaceMask of blobs and
+///set some parameters
+void FaceDetector::SetLabel(int x, int y) {
+    safe++;
+    //don't make a stack overflow
+    if (safe > MAX_CALLSTACK) {
+        return;
+    }
+    //choosen parameters
+    if (x < minX) {
+        minX = x;
+    }
+    if (x > maxX) {
+        maxX = x;
+    }
+    if (y < minY) {
+        minY = y;
+    }
+    if (y > maxY) {
+        maxY = y;
+    }
+    //set label
+    iFaceMask[y * this->processor->W + x] = label;
+    //upper pixel
+    if ((y - 1 >= 0) && iFaceMask[(y - 1) * this->processor->W + x] < 0) {
+        SetLabel(x,(y - 1));
+    }
+    //under pixel
+    if ((y + 1 < this->processor->H) && iFaceMask[(y + 1) * this->processor->W + x] < 0) {
+        SetLabel(x, y + 1);
+    }
+    //left pixel
+    if ((x - 1 >= 0) && iFaceMask[y * this->processor->W + x - 1] < 0) {
+        SetLabel(x - 1, y);
+    }
+    //right pixel
+    if ((x + 1 < this->processor->W) && iFaceMask[y * this->processor->W + x + 1] < 0) {
+        SetLabel(x + 1, y);
+    }
+    safe--;
+}
+
+///
+///Draw box into the ImageProcessor image
+///
+void FaceDetector::DrawBox(int minX, int minY, int maxX, int maxY) {
+    for (int i = minX; i < maxX; i++) {
+        //draw from down to up
+        int pos = (minY * this->processor->W + i) * 3;
+        this->processor->pixR[pos] = 255;
+        this->processor->pixG[pos] = 0;
+        this->processor->pixB[pos] = 255;
+        pos = (maxY * this->processor->W + i) * 3;
+        this->processor->pixR[pos] = 255;
+        this->processor->pixG[pos] = 0;
+        this->processor->pixB[pos] = 255;
+        if (i == minX || i == (maxX - 1)) {
+            for (int j = minY; j < maxY; j++) {
+                int tempPos = (j * this->processor->W + i ) * 3;
+                this->processor->pixR[tempPos] = 255;
+                this->processor->pixG[tempPos] = 0;
+                this->processor->pixB[tempPos] = 255;
+            }
+        }
+
     }
 }
 
@@ -249,6 +379,7 @@ FaceDetector::FaceDetector(ImageProcessor* processor, Vector3* average, Vector3*
     this->sumG = sumG;
     this->sumB = sumB;
     this->count = count;
+    this->iFaceMask = nullptr;
 }
 
 FaceDetector::FaceDetector() {

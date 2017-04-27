@@ -59,7 +59,10 @@ public:
     QLabel *LBDesvMulti;
     QSlider *SliderBDesv;
     QPushButton *BDetectSkin;
-    QSlider *SliderBlobKernel;
+    QLabel *LMaskKernelX;
+    QSlider *SliderBlobKernelX;
+    QLabel *LMaskKernelY;
+    QSlider *SliderBlobKernelY;
     QPushButton *BDilate;
     QPushButton *BErode;
     QTabWidget *tabWidget;
@@ -95,7 +98,7 @@ public:
     {
         if (FPImage->objectName().isEmpty())
             FPImage->setObjectName(QStringLiteral("FPImage"));
-        FPImage->resize(1264, 833);
+        FPImage->resize(1264, 852);
         centralWidget = new QWidget(FPImage);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -142,7 +145,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 809, 758));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 809, 777));
         gridLayout = new QGridLayout(scrollAreaWidgetContents);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -203,15 +206,35 @@ public:
 
         verticalLayout_2->addWidget(BDetectSkin);
 
-        SliderBlobKernel = new QSlider(centralWidget);
-        SliderBlobKernel->setObjectName(QStringLiteral("SliderBlobKernel"));
-        SliderBlobKernel->setMinimum(3);
-        SliderBlobKernel->setMaximum(15);
-        SliderBlobKernel->setSingleStep(2);
-        SliderBlobKernel->setPageStep(4);
-        SliderBlobKernel->setOrientation(Qt::Horizontal);
+        LMaskKernelX = new QLabel(centralWidget);
+        LMaskKernelX->setObjectName(QStringLiteral("LMaskKernelX"));
 
-        verticalLayout_2->addWidget(SliderBlobKernel);
+        verticalLayout_2->addWidget(LMaskKernelX);
+
+        SliderBlobKernelX = new QSlider(centralWidget);
+        SliderBlobKernelX->setObjectName(QStringLiteral("SliderBlobKernelX"));
+        SliderBlobKernelX->setMinimum(3);
+        SliderBlobKernelX->setMaximum(15);
+        SliderBlobKernelX->setSingleStep(2);
+        SliderBlobKernelX->setPageStep(4);
+        SliderBlobKernelX->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderBlobKernelX);
+
+        LMaskKernelY = new QLabel(centralWidget);
+        LMaskKernelY->setObjectName(QStringLiteral("LMaskKernelY"));
+
+        verticalLayout_2->addWidget(LMaskKernelY);
+
+        SliderBlobKernelY = new QSlider(centralWidget);
+        SliderBlobKernelY->setObjectName(QStringLiteral("SliderBlobKernelY"));
+        SliderBlobKernelY->setMinimum(3);
+        SliderBlobKernelY->setMaximum(15);
+        SliderBlobKernelY->setSingleStep(2);
+        SliderBlobKernelY->setPageStep(4);
+        SliderBlobKernelY->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(SliderBlobKernelY);
 
         BDilate = new QPushButton(centralWidget);
         BDilate->setObjectName(QStringLiteral("BDilate"));
@@ -379,6 +402,8 @@ public:
         LGDesvMulti->setText(QApplication::translate("FPImage", "S desviation multiplier", Q_NULLPTR));
         LBDesvMulti->setText(QApplication::translate("FPImage", "B desviation multiplier", Q_NULLPTR));
         BDetectSkin->setText(QApplication::translate("FPImage", "Detect Skin", Q_NULLPTR));
+        LMaskKernelX->setText(QApplication::translate("FPImage", "Mask kernel X size", Q_NULLPTR));
+        LMaskKernelY->setText(QApplication::translate("FPImage", "Mask kernel Y size", Q_NULLPTR));
         BDilate->setText(QApplication::translate("FPImage", "Dilate", Q_NULLPTR));
         BErode->setText(QApplication::translate("FPImage", "Erode", Q_NULLPTR));
         EcranHistoR->setText(QString());

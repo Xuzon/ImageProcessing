@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1264</width>
-    <height>833</height>
+    <height>852</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,7 +63,7 @@
          <x>0</x>
          <y>0</y>
          <width>809</width>
-         <height>758</height>
+         <height>777</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -148,14 +148,40 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="LMaskKernelX">
         <property name="text">
-         <string>Mask kernel size</string>
+         <string>Mask kernel X size</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSlider" name="SliderBlobKernel">
+       <widget class="QSlider" name="SliderBlobKernelX">
+        <property name="minimum">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <number>15</number>
+        </property>
+        <property name="singleStep">
+         <number>2</number>
+        </property>
+        <property name="pageStep">
+         <number>4</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="LMaskKernelY">
+        <property name="text">
+         <string>Mask kernel Y size</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderBlobKernelY">
         <property name="minimum">
          <number>3</number>
         </property>

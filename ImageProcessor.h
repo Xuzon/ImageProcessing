@@ -4,6 +4,7 @@
 #include "ColorSpace.h"
 #include "Vector3.h"
 #include <iostream>
+#define MAX_CALLSTACK 10000
 
 using namespace std;
 
@@ -184,15 +185,29 @@ public:
     void DetectSkin(float rDesvMultilier, float gDesvMultiplier, float bDesvMultiplier);
 
     //Basic object modelling
-    void Erode(int kernelSize);
-    void Dilate(int kernelSize);
+    void Erode(int kernelSizeX,int kernelSizeY);
+    void Dilate(int kernelSizeX, int kernelSizeY);
     void ApplyMask();
     //mask operations
-    bool AnyPixelInMask(int x, int y, int kernelSize);
-    bool AnyNotPixelInMask(int x, int y, int kernelSize);
-    void GenerateMask(int kernelSize);
+    bool AnyPixelInMask(int x, int y, int kernelSizeX,int kernelSizeY);
+    bool AnyNotPixelInMask(int x, int y, int kernelSizeX,int kernelSizeY);
+    void GenerateMask(int kernelSizeX,int kernelSizeY);
+    //blob labelling
+    void LabelFaceMask();
+    void SetLabel(int x, int y);
+    void DrawBox(int minX, int minY, int maxX, int maxY);
+    int* iFaceMask;
+    int label;
+    int safe;
+    int minX;
+    int maxX;
+    int minY;
+    int maxY;
+
     uchar* SE = nullptr;
-    int lastKernelSize = -1;
+    int lastKernelSizeX = -1;
+    int lastKernelSizeY = -1;
+    
 
     FaceDetector(ImageProcessor* processor);
     FaceDetector(ImageProcessor* processor, Vector3* average, Vector3* typicalDesviation, int sumR, int sumG, int sumB, int count);

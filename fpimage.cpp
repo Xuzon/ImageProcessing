@@ -317,12 +317,12 @@ void FPImage::ChangeBrightness(int value) {
 }
 
 void FPImage::Dilate() {
-    this->processor->faceDetector->Dilate(this->ui->SliderBlobKernel->value());
+    this->processor->faceDetector->Dilate(this->ui->SliderBlobKernelX->value(), this->ui->SliderBlobKernelY->value());
     ShowIt();
 }
 
 void FPImage::Erode() {
-    this->processor->faceDetector->Erode(this->ui->SliderBlobKernel->value());
+    this->processor->faceDetector->Erode(this->ui->SliderBlobKernelX->value(), this->ui->SliderBlobKernelY->value());
     ShowIt();
 }
 
