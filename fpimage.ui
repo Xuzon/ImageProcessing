@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1264</width>
-    <height>852</height>
+    <height>899</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,7 +63,7 @@
          <x>0</x>
          <y>0</y>
          <width>809</width>
-         <height>777</height>
+         <height>824</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -616,7 +616,7 @@
            <number>3</number>
           </property>
           <property name="maximum">
-           <number>9</number>
+           <number>31</number>
           </property>
           <property name="singleStep">
            <number>2</number>

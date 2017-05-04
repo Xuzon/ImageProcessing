@@ -919,6 +919,7 @@ ImageProcessor::ImageProcessor(uchar* pixR, uchar* pixG, uchar* pixB, int W, int
     this->S = S;
     this->copyImage = new uchar[S * H];
     this->faceMask = new uchar[S * H / 3];
+    this->matFaceMask = cv::Mat(H, W, CV_8U, this->faceMask, W);
     this->faceMaskBackup = new uchar[S * H / 3];
     memcpy(this->copyImage, this->pixR,H * S);
     pixBCopy = (pixGCopy = (pixRCopy = copyImage) + 1) + 1;

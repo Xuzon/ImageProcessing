@@ -1,15 +1,14 @@
 #ifndef FPIMAGE_H
 #define FPIMAGE_H
 
-//OCV #include <cv.h>
-//OCV #include <cxcore.h>
-//OCV #include <highgui.h>
-//OCV #include <ml.h>
+
 #pragma once
 #include <QMainWindow>
 #include "ImageProcessor.h"
 #include "FaceDetector.h"
 #include "Vector3.h"
+
+#include "opencv2/opencv.hpp"
 
 namespace Ui {
 class FPImage;
@@ -22,12 +21,11 @@ class FPImage : public QMainWindow
 public:
     explicit FPImage(QWidget *parent = 0);
     ~FPImage();
+    cv::Mat Ima;   // La imagen OpenCV (encapsula la imagen Qt)
     
 private:
     Ui::FPImage *ui;
-
     QString Path;               // Para recordar la carpeta al cargar imágenes
-//OCV     cv::Mat Ima;                // La imagen OpenCV (encapsula la imagen Qt)
     QImage Image;               // Imagen Qt
     uchar *pixR, *pixG, *pixB;  // Punteros a los tres canales R, G y B
     int W, H;                   // Tamaño de la imagen actual

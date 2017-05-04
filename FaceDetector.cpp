@@ -1,4 +1,5 @@
 #include "ImageProcessor.h"
+#include "opencv2/opencv.hpp"
 
 void FaceDetector::AddPixel(uchar r, uchar g, uchar b) {
     count++;
@@ -82,6 +83,73 @@ void FaceDetector::ApplyMask() {
     LabelFaceMask();
 }
 
+void FaceDetector::OpenCVSkin(float rDesvMultiplier, float gDesvMultiplier, float bDesvMultiplier,int kernelSize) {
+    for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
+        for (int x = 0; x < processor->W; x++, i += 3) {
+            bool skin = true;
+            float r = (processor->pixL[i] - average.x);
+            r *= r;
+            float rDesv = typicalDesviation.x * rDesvMultiplier;
+            r /= (rDesv * rDesv);
+            float g = (processor->pixH[i] - average.y);
+            g *= g;
+            float gDesv = typicalDesviation.y * gDesvMultiplier;
+            g /= (gDesv * gDesv);
+            float b = (processor->pixS[i] - average.z);
+            b *= b;
+            float bDesv = typicalDesviation.z * bDesvMultiplier;
+            b /= (bDesv * bDesv);
+            if (r + g + b > 1) {
+                skin = false;
+            }
+            processor->faceMask[i / 3] = skin ? 1 : 0;
+        }
+    }
+    cv::Mat circleSE(kernelSize,kernelSize,CV_8U,cv::Scalar(0));
+    cv::circle(circleSE,cv::Point(kernelSize/2,kernelSize/2),kernelSize/2,cv::Scalar(1),-1);
+    //delete hands and stuff
+    cv::erode(processor->matFaceMask,processor->matFaceMask,circleSE);
+    //reverse deleting faces
+    cv::dilate(processor->matFaceMask, processor->matFaceMask, circleSE);
+    //show original image
+    for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
+        for (int x = 0; x < processor->W; x++, i += 3) {
+            processor->pixR[i] = processor->pixRCopy[i];
+            processor->pixG[i] = processor->pixGCopy[i];
+            processor->pixB[i] = processor->pixBCopy[i];
+        }
+    }
+    //LabelFaceMask();
+    cv::Mat mainImage = cv::Mat(processor->H, processor->W, CV_8UC3, processor->pixR, processor->S);
+    vector<vector<cv::Point> > contours;
+    vector<cv::Vec4i> hierarchy;
+    try {
+        cv::findContours(this->processor->matFaceMask, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+    } catch (cv::Exception & e) {
+        cerr << e.msg << endl;
+    }
+    memset(this->processor->faceMask, 0, this->processor->W * this->processor->H);
+    for (int i = 0; i< contours.size(); i++) {
+        cv::Scalar color = cv::Scalar(1);
+        drawContours(this->processor->matFaceMask, contours, i, color, 2, 8, hierarchy, 0);
+    }
+    for (int y = 0, i = 0; y < processor->H; y++, i += processor->Padding) {
+        for (int x = 0; x < processor->W; x++, i += 3) {
+            bool skin = processor->faceMask[i / 3] == 1 ? true : false;
+            processor->pixR[i] = skin ? 255 : processor->pixRCopy[i];
+            processor->pixG[i] = skin ? 0 : processor->pixGCopy[i];
+            processor->pixB[i] = skin ? 255 : processor->pixBCopy[i];
+        }
+    }
+    /*cv::SimpleBlobDetector detector;
+    std::vector<cv::KeyPoint> keypoints;
+    try {
+        detector.detect(processor->matFaceMask, keypoints);
+    } catch (cv::Exception & e) {
+        cerr << e.msg << endl;
+    }
+    cv::drawKeypoints(mainImage, keypoints, mainImage, cv::Scalar(255, 0, 255));*/
+}
 void FaceDetector::Dilate(int kernelSizeX,int kernelSizeY) {
     GenerateMask(kernelSizeX,kernelSizeY);
     for (int y = 0; y < processor->H; y++) {

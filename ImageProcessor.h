@@ -4,6 +4,7 @@
 #include "ColorSpace.h"
 #include "Vector3.h"
 #include <iostream>
+#include "opencv2/opencv.hpp"
 #define MAX_CALLSTACK 10000
 
 using namespace std;
@@ -138,6 +139,7 @@ public:
 
     int W, H, Padding, S;
 
+    cv::Mat matFaceMask;
     uchar *faceMask;
     uchar *faceMaskBackup;
 
@@ -208,6 +210,7 @@ public:
     int lastKernelSizeX = -1;
     int lastKernelSizeY = -1;
     
+    void OpenCVSkin(float rDesvMultiplier, float gDesvMultiplier, float bDesvMultiplier, int kernelSize);
 
     FaceDetector(ImageProcessor* processor);
     FaceDetector(ImageProcessor* processor, Vector3* average, Vector3* typicalDesviation, int sumR, int sumG, int sumB, int count);
@@ -224,5 +227,7 @@ private:
     ImageProcessor* processor;
     void CalculateAverage(int r, int g, int b);
     void CalculateTypicalDesviation(int r, int g, int b);
+
+    
 };
 

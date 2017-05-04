@@ -4,9 +4,9 @@
 #include <QFileDialog>
 #include <QPainter>
 
-//OCV #include "opencv2/imgproc.hpp"
+#include "opencv2/imgproc.hpp"
 
-//OCV using namespace cv;
+using namespace cv;
 
 //--------------------------------------------------
 //-- Filtro de eventos para capturar mouse clicks --
@@ -146,17 +146,6 @@ FPImage::FPImage(QWidget *parent) :
     Dib3=QPixmap(256,100);
     Dib3.fill(Qt::black);
 
-/*
-    // Ejemplo de cómo dibujar usando funciones de alto nivel (QPainter)
-    //   Declaramos un pintor (QPainter) y lo asociamos a un lienzo (QPixmap)
-    QPainter p(&Dib3);
-    //   Escogemos un lápiz (QPen; también hay pinceles, QBrush, para los rellenos)
-    p.setPen(QPen(Qt::yellow));
-    //   Trazamos un par de líneas, por ejemplo
-    p.drawLine(0,0,255,99);
-    p.drawLine(0,99,255,0);
-*/
-
     ui->EcranHistoB->setPixmap(Dib3);
 }
 
@@ -212,7 +201,7 @@ void FPImage::Load(void){
     this->processor = new ImageProcessor(pixR, pixG, pixB, W, H, Padding, S);
     this->DrawTransferenceFunction();
     // Creamos una Mat de OpenCV (Ima) que "encapsula" los pixels de la QImage Image
-//OCV     Ima=Mat(H,W,CV_8UC3,pixR,S);
+    Ima=Mat(H,W,CV_8UC3,pixR,S);
 
     // Mostramos algo de texto informativo
     ui->ERes->appendPlainText("Loaded "+finfo.fileName());
@@ -263,14 +252,22 @@ void FPImage::DoIt(void){
     //this->DrawTransferenceFunction();
     
     //this->SkinChange(0);
-    this->processor->Blur(this->ui->SliderKernel->value());
+    //this->processor->Blur(this->ui->SliderKernel->value());
     //this->processor->Sharpening(this->ui->SliderKernel->value());
     //this->processor->BlurInsideObjects(this->ui->SliderKernel->value(), this->ui->SliderEdges->value(), edgeMetric);
 
     // Ejemplo de procesamiento CON OpenCV
-//OCV     Mat radio5(11,11,CV_8U,Scalar(0));
-//OCV     circle(radio5,Point(5,5),5,Scalar(1),-1);
-//OCV     erode(Ima,Ima,radio5);
+    //Mat radio5(11,11,CV_8U,Scalar(0));
+    //circle(radio5,Point(5,5),5,Scalar(1),-1);
+    //erode(Ima,Ima,radio5);
+    cv::Size* ksize = new Size(this->ui->SliderKernel->value(), this->ui->SliderKernel->value());
+    cv::blur(Ima,Ima, *ksize);
+    this->processor->CreateLHS();
+    float rDesv = this->ui->SliderRDesv->value() / 100.0f;
+    float gDesv = this->ui->SliderGDesv->value() / 100.0f;
+    float bDesv = this->ui->SliderBDesv->value() / 100.0f;
+    processor->faceDetector->OpenCVSkin(rDesv, gDesv, bDesv,this->ui->SliderKernel->value());
+
 
     // Sacamos algo de texto informativo
     ui->ERes->appendPlainText("Did it");

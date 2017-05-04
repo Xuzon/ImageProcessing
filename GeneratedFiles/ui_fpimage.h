@@ -98,7 +98,7 @@ public:
     {
         if (FPImage->objectName().isEmpty())
             FPImage->setObjectName(QStringLiteral("FPImage"));
-        FPImage->resize(1264, 852);
+        FPImage->resize(1264, 899);
         centralWidget = new QWidget(FPImage);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -145,7 +145,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 809, 777));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 809, 824));
         gridLayout = new QGridLayout(scrollAreaWidgetContents);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -351,7 +351,7 @@ public:
         SliderKernel->setObjectName(QStringLiteral("SliderKernel"));
         SliderKernel->setGeometry(QRect(-1, 211, 251, 21));
         SliderKernel->setMinimum(3);
-        SliderKernel->setMaximum(9);
+        SliderKernel->setMaximum(31);
         SliderKernel->setSingleStep(2);
         SliderKernel->setPageStep(2);
         SliderKernel->setSliderPosition(3);
